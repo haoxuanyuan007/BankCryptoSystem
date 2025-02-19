@@ -1,0 +1,10 @@
+Flask
+Flask-WTF
+Flask-Session
+Flask-SQLAlchemy
+pycryptodome
+bcrypt
+pyotp
+pyjwt
+requests
+gunicornx
