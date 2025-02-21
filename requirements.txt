@@ -8,3 +8,6 @@ pyotp
 pyjwt
 requests
 gunicornx
+dotenv
+Flask-Migrate
+PyMySQL
