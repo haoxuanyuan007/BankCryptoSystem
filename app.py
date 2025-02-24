@@ -33,8 +33,4 @@ def index():
     return render_template('index.html', user_info=user_info)
 
 if __name__ == '__main__':
-    app.run(debug=True)
-
-# For testing
-print("Loaded SECRET_KEY:", app.config['SECRET_KEY'])
-print("Loaded ENCRYPTION_KEY:", app.config['ENCRYPTION_KEY'])
+    app.run(ssl_context=('cert.pem', 'key.pem'), debug=True)

@@ -20,7 +20,6 @@ def login():
             # Same as client loging MFA
             otp = str(random.randint(100000, 999999))
             flash(f"Your OTP code is: {otp} (Simulation Only)")
-            flash(f"Your OTP code is: {otp} (Simulation Only)")
             session['pending_employee'] = {
                 'user_id': user.id,
                 'username': user.username,

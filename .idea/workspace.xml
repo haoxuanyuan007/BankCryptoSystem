@@ -4,10 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c85c22e6-1bd4-42ef-a988-dc9498e63272" name="Changes" comment="Implemented Employee View, allow employees to view transactions, update customer's balance and the messaging between clients and employees">
+    <list default="true" id="c85c22e6-1bd4-42ef-a988-dc9498e63272" name="Changes" comment="Fixed Inbox">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/inbox.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/inbox.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blueprints/employee.py" beforeDir="false" afterPath="$PROJECT_DIR$/blueprints/employee.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crypto/encryption.py" beforeDir="false" afterPath="$PROJECT_DIR$/crypto/encryption.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,22 +60,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;Flask server.MyBankCryptoSystem.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.editor&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
+    "Flask server.Flask (app.py).executor": "Run",
+    "Flask server.MyBankCryptoSystem.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "master",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.editor",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/db" />
@@ -88,6 +91,10 @@
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="FLASK_RUN_CERT" value="cert.pem" />
+        <env name="FLASK_RUN_KEY" value="key.pem" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="SDK_NAME" value="Python 3.12 (MyBankCryptoSystem)" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
@@ -131,7 +138,9 @@
       <workItem from="1740157330081" duration="658000" />
       <workItem from="1740357208462" duration="8039000" />
       <workItem from="1740365875844" duration="162000" />
-      <workItem from="1740411886391" duration="10559000" />
+      <workItem from="1740411886391" duration="11370000" />
+      <workItem from="1740430232691" duration="3240000" />
+      <workItem from="1740433487478" duration="2708000" />
     </task>
     <task id="LOCAL-00001" summary="Initial Config of the Project">
       <option name="closed" value="true" />
@@ -181,7 +190,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740419787699</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Fixed Inbox">
+      <option name="closed" value="true" />
+      <created>1740422526957</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1740422526957</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -202,9 +219,11 @@
     <MESSAGE value="Initial Config of the Project" />
     <MESSAGE value="Implemented AES and RSA, also the testing script" />
     <MESSAGE value="Implemented Employee View, allow employees to view transactions, update customer's balance and the messaging between clients and employees" />
-    <option name="LAST_COMMIT_MESSAGE" value="Implemented Employee View, allow employees to view transactions, update customer's balance and the messaging between clients and employees" />
+    <MESSAGE value="Fixed Inbox" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed Inbox" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/MyBankCryptoSystem$MyBankCryptoSystem.coverage" NAME="MyBankCryptoSystem Coverage Results" MODIFIED="1740421254268" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MyBankCryptoSystem$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1740434385514" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/MyBankCryptoSystem$MyBankCryptoSystem.coverage" NAME="MyBankCryptoSystem Coverage Results" MODIFIED="1740435664825" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
