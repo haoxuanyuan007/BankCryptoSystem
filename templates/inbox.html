@@ -1,99 +1,46 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>MyBank Home</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Inbox - MyBank</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-  <!-- 导航栏 -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container">
-      <a class="navbar-brand" href="{{ url_for('index') }}">MyBank</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          {% if session.username %}
-            {% if session.role and session.role == 'employee' %}
-              <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('employee.dashboard') }}">Dashboard</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
-              </li>
-            {% else %}
-              <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('transaction.new_transaction') }}">New Transaction</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('transaction.view_transactions') }}">Transactions</a>
-              </li>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown">
-                  Account
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="accountDropdown">
-                  <li><a class="dropdown-item" href="{{ url_for('account.deposit') }}">Deposit</a></li>
-                  <li><a class="dropdown-item" href="{{ url_for('account.withdraw') }}">Withdraw</a></li>
-                  <li><a class="dropdown-item" href="{{ url_for('account.settings') }}">Settings</a></li>
-                </ul>
-              </li>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="messageDropdown" role="button" data-bs-toggle="dropdown">
-                  Messages
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="messageDropdown">
-                  <li><a class="dropdown-item" href="{{ url_for('message.inbox') }}">Inbox</a></li>
-                  <li><a class="dropdown-item" href="{{ url_for('message.outbox') }}">Outbox</a></li>
-                  <li><a class="dropdown-item" href="{{ url_for('message.send_message') }}">Send Message</a></li>
-                </ul>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
-              </li>
-            {% endif %}
-          {% else %}
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('auth.login') }}">Customer Login</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('auth.register') }}">Register</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('employee.login') }}">Employee Login</a>
-            </li>
-          {% endif %}
-        </ul>
-      </div>
+<div class="container mt-5">
+    <h1 class="text-center">Inbox</h1>
+    {% if messages %}
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>From</th>
+                        <th>Content</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for msg in messages %}
+                    <tr>
+                        <td>{{ msg.id }}</td>
+                        <td>{{ msg.sender_info }}</td>
+                        <td>{{ msg.decrypted_content }}</td>
+                        <td>{{ msg.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="text-center">No messages in your inbox.</p>
+    {% endif %}
+    <div class="text-center mt-3">
+        <a href="{{ url_for('message.send_message') }}" class="btn btn-primary">Send New Message</a>
+        <a href="{{ url_for('message.outbox') }}" class="btn btn-secondary">View Outbox</a>
     </div>
-  </nav>
-
-  <!-- 主体内容 -->
-  <div class="container mt-4">
-    <div class="p-4 bg-light rounded">
-      {% if session.username and user_info %}
-        {% if session.role and session.role == 'employee' %}
-          <h1 class="display-4">Welcome, Employee {{ session.username }}!</h1>
-          <p class="lead">Access your dashboard to manage customer accounts and transactions.</p>
-          <p><a href="{{ url_for('employee.dashboard') }}" class="btn btn-primary">Go to Dashboard</a></p>
-        {% else %}
-          <h1 class="display-4">Welcome to MyBank!</h1>
-          <p class="lead">Hello, {{ session.username }}!</p>
-          <p>Account Number: <strong>{{ user_info.account_number }}</strong></p>
-          <p>Balance: <strong>${{ "%.2f"|format(user_info.balance) }}</strong></p>
-        {% endif %}
-      {% else %}
-        <h1 class="display-4">Welcome to MyBank!</h1>
-        <p class="lead">For Customers: <a href="{{ url_for('auth.login') }}">Login</a> or <a href="{{ url_for('auth.register') }}">Register</a></p>
-        <p class="lead">For Employees: <a href="{{ url_for('employee.login') }}">Employee Login</a></p>
-      {% endif %}
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
