@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Employee Dashboard - MyBank</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+   <h1>Employee Dashboard</h1>
+   <p>Welcome, {{ session.username }}. Below is the list of client accounts:</p>
+
+   <!-- Entry for further operations -->
+   <div class="mb-4">
+       <a href="{{ url_for('message.inbox') }}" class="btn btn-primary">Inbox</a>
+       <a href="{{ url_for('message.outbox') }}" class="btn btn-secondary">Outbox</a>
+       <a href="{{ url_for('message.send_message') }}" class="btn btn-info">Send Message</a>
+       <a href="{{ url_for('employee.view_logs') }}" class="btn btn-warning">Operation Logs</a>
+   </div>
+
+   <table class="table table-bordered">
+     <thead>
+       <tr>
+         <th>ID</th>
+         <th>Username</th>
+         <th>Account Number</th>
+         <th>Balance</th>
+         <th>Actions</th>
+       </tr>
+     </thead>
+     <tbody>
+       {% for customer in customers %}
+         <tr>
+           <td>{{ customer.id }}</td>
+           <td>{{ customer.username }}</td>
+           <td>{{ customer.account_number }}</td>
+           <td>${{ "%.2f"|format(customer.balance) }}</td>
+           <td>
+             <div class="btn-group" role="group">
+               <a href="{{ url_for('employee.view_customer', user_id=customer.id) }}" class="btn btn-sm btn-info">View Details</a>
+               <a href="{{ url_for('employee.review_customer_transactions', user_id=customer.id) }}" class="btn btn-sm btn-success">Review Transactions</a>
+               <a href="{{ url_for('employee.update_customer', user_id=customer.id) }}" class="btn btn-sm btn-warning">Update Account</a>
+             </div>
+           </td>
+         </tr>
+       {% endfor %}
+     </tbody>
+   </table>
+   <a href="{{ url_for('auth.logout') }}" class="btn btn-danger mt-3">Logout</a>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

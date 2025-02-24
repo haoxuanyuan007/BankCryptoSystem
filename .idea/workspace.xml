@@ -4,14 +4,42 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c85c22e6-1bd4-42ef-a988-dc9498e63272" name="Changes" comment="Dir">
-      <change afterPath="$PROJECT_DIR$/.env" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/crypto/encryption.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/test_encryption.py" afterDir="false" />
+    <list default="true" id="c85c22e6-1bd4-42ef-a988-dc9498e63272" name="Changes" comment="Implemented AES and RSA, also the testing script">
+      <change afterPath="$PROJECT_DIR$/blueprints/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/blueprints/account.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/blueprints/auth.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/blueprints/employee.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/blueprints/message.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/blueprints/transaction.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/crypto/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/crypto/integrity.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/db/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/db/models.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/extensions.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/deposit.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/employee_customer.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/employee_dashboard.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/employee_login.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/employee_logs.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/employee_mfa.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/employee_review_customer_transactions.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/employee_review_transaction.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/employee_update_customer.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/inbox.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/login.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/mfa.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/new_transaction.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/outbox.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/register.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/send_message.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/settings.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/view_transactions.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/withdraw.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,6 +51,7 @@
       <list>
         <option value="Flask Main" />
         <option value="Python Script" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -61,21 +90,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Flask server.MyBankCryptoSystem.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "master",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.lookFeel",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;Flask server.MyBankCryptoSystem.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.editor&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/db" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="MyBankCryptoSystem" type="Python.FlaskServer">
       <module name="MyBankCryptoSystem" />
@@ -85,7 +120,7 @@
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
@@ -111,7 +146,12 @@
       <option name="presentableId" value="Default" />
       <updated>1739965073704</updated>
       <workItem from="1739965074712" duration="3589000" />
-      <workItem from="1740132869511" duration="11088000" />
+      <workItem from="1740132869511" duration="12338000" />
+      <workItem from="1740148428904" duration="8468000" />
+      <workItem from="1740157330081" duration="658000" />
+      <workItem from="1740357208462" duration="8039000" />
+      <workItem from="1740365875844" duration="162000" />
+      <workItem from="1740411886391" duration="7790000" />
     </task>
     <task id="LOCAL-00001" summary="Initial Config of the Project">
       <option name="closed" value="true" />
@@ -145,7 +185,15 @@
       <option name="project" value="LOCAL" />
       <updated>1739968463189</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Implemented AES and RSA, also the testing script">
+      <option name="closed" value="true" />
+      <created>1740145137299</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1740145137299</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -164,9 +212,10 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initial Config of the Project" />
-    <option name="LAST_COMMIT_MESSAGE" value="Initial Config of the Project" />
+    <MESSAGE value="Implemented AES and RSA, also the testing script" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implemented AES and RSA, also the testing script" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/MyBankCryptoSystem$MyBankCryptoSystem.coverage" NAME="MyBankCryptoSystem Coverage Results" MODIFIED="1740136096923" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/MyBankCryptoSystem$MyBankCryptoSystem.coverage" NAME="MyBankCryptoSystem Coverage Results" MODIFIED="1740419538161" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
