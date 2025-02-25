@@ -48,32 +48,6 @@ def aes_decrypt(cipher_data: bytes, key: str) -> str:
     return plaintext_bytes.decode("utf-8")
 
 
-def aes_encrypt_deterministic(plaintext: str, key: str) -> bytes:
-    """
-    Use fixed IV (Same plaintext always generate same ciphertext), suitable to store the data need to be searched or
-    data as an index.
-    """
-    aes_key = key.encode('utf-8') if isinstance(key, str) else key
-    iv = b'\x00' * 16  # Fixed iv
-    cipher = AES.new(aes_key, AES.MODE_CBC, iv)
-    block_size = AES.block_size
-    plaintext_bytes = plaintext.encode('utf-8')
-    padding_length = block_size - (len(plaintext_bytes) % block_size)
-    padded = plaintext_bytes + bytes([padding_length]) * padding_length
-    ciphertext = cipher.encrypt(padded)
-    return ciphertext
-
-def aes_decrypt_deterministic(ciphertext_hex: str, key: str) -> str:
-    aes_key = key.encode('utf-8') if isinstance(key, str) else key
-    iv = b'\x00' * 16
-    ciphertext = bytes.fromhex(ciphertext_hex)
-    cipher = AES.new(aes_key, AES.MODE_CBC, iv)
-    padded = cipher.decrypt(ciphertext)
-    padding_length = padded[-1]
-    plaintext_bytes = padded[:-padding_length]
-    return plaintext_bytes.decode('utf-8')
-
-
 ### RSA Asymmetric encryption
 def generate_rsa_keypair(key_size: int = 2048):
     """
