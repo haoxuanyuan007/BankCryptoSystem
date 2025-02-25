@@ -1,24 +1,28 @@
 {% extends "base.html" %}
-
 {% block title %}Update Customer Acc - MyBank{% endblock %}
-
 {% block content %}
-    <h1>Update Customer Account</h1>
-    <div class="card mb-4">
-        <div class="card-body">
-            <p><strong>Username:</strong> {{ customer.username }}</p>
-            <p><strong>Account Number:</strong> {{ customer.account_number }}</p>
-            <p><strong>Current Balance:</strong> ${{ "%.2f"|format(customer.balance) }}</p>
+
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <h2>Update Customer Account</h2>
+            <div class="card mb-4">
+                <div class="card-body">
+                    <p><strong>Username:</strong> {{ customer.username }}</p>
+                    <p><strong>Account Number:</strong> {{ customer.account_number }}</p>
+                    <p><strong>Current Balance:</strong> ${{ "%.2f"|format(customer.balance) }}</p>
+                </div>
+            </div>
+            <form method="POST" action="{{ url_for('employee.update_customer', user_id=customer.id) }}">
+                <div class="mb-3">
+                    <label for="balance" class="form-label">New Balance:</label>
+                    <input type="number" step="0.01" name="balance" id="balance" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Update Account</button>
+            </form>
+            <a href="{{ url_for('employee.view_customer', user_id=customer.id) }}" class="btn btn-secondary mt-3 w-100">Back
+                to
+                Customer Details</a>
         </div>
     </div>
-    <form method="POST" action="{{ url_for('employee.update_customer', user_id=customer.id) }}">
-        <div class="mb-3">
-            <label for="balance" class="form-label">New Balance:</label>
-            <input type="number" step="0.01" name="balance" id="balance" class="form-control" required>
-        </div>
-        <button type="submit" class="btn btn-primary w-100">Update Account</button>
-    </form>
-    <a href="{{ url_for('employee.view_customer', user_id=customer.id) }}" class="btn btn-secondary mt-3">Back to
-        Customer Details</a>
 
 {% endblock %}

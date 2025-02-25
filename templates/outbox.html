@@ -1,37 +1,38 @@
 {% extends "base.html" %}
-
 {% block title %}View Transaction - MyBank{% endblock %}
-
 {% block content %}
-    <h1 class="text-center">Outbox</h1>
-    {% if messages %}
-        <div class="table-responsive">
-            <table class="table table-bordered">
-                <thead class="table-light">
-                <tr>
-                    <th>ID</th>
-                    <th>To</th>
-                    <th>Content</th>
-                    <th>Time</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for msg in messages %}
+
+    <div class="row justify-content-center">
+        <h2 class="text-center">Outbox</h2>
+        {% if messages %}
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-light">
                     <tr>
-                        <td>{{ msg.id }}</td>
-                        <td>{{ msg.receiver_info }}</td>
-                        <td>{{ msg.decrypted_content }}</td>
-                        <td>{{ msg.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+                        <th>ID</th>
+                        <th>To</th>
+                        <th>Content</th>
+                        <th>Time</th>
                     </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {% for msg in messages %}
+                        <tr>
+                            <td>{{ msg.id }}</td>
+                            <td>{{ msg.receiver_info }}</td>
+                            <td>{{ msg.decrypted_content }}</td>
+                            <td>{{ msg.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-center">No messages in your outbox.</p>
+        {% endif %}
+        <div class="text-center mt-3">
+            <a href="{{ url_for('message.send_message') }}" class="btn btn-primary">Send New Message</a>
+            <a href="{{ url_for('message.inbox') }}" class="btn btn-secondary">View Inbox</a>
         </div>
-    {% else %}
-        <p class="text-center">No messages in your outbox.</p>
-    {% endif %}
-    <div class="text-center mt-3">
-        <a href="{{ url_for('message.send_message') }}" class="btn btn-primary">Send New Message</a>
-        <a href="{{ url_for('message.inbox') }}" class="btn btn-secondary">View Inbox</a>
     </div>
 {% endblock %}

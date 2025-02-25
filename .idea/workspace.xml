@@ -4,23 +4,30 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c85c22e6-1bd4-42ef-a988-dc9498e63272" name="Changes" comment="Removed redundant code">
-      <change afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/employee_pending_transactions.html" afterDir="false" />
+    <list default="true" id="c85c22e6-1bd4-42ef-a988-dc9498e63272" name="Changes" comment="Fixed Nav Bar, Uniform the style">
+      <change afterPath="$PROJECT_DIR$/blueprints/admin.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/admin_add_employee.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/admin_audit.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/admin_dashboard.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/admin_login.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/admin_mfa.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/admin_update_employee.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/admin_update_role.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blueprints/employee.py" beforeDir="false" afterPath="$PROJECT_DIR$/blueprints/employee.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blueprints/transaction.py" beforeDir="false" afterPath="$PROJECT_DIR$/blueprints/transaction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/db/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/deposit.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/deposit.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/employee_customer.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/employee_customer.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/employee_dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/employee_dashboard.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/employee_login.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/employee_login.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/employee_logs.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/employee_logs.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/employee_mfa.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/employee_mfa.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/employee_pending_transactions.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/employee_pending_transactions.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/employee_review_customer_transactions.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/employee_review_customer_transactions.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/employee_review_transaction.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/employee_review_transaction.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/employee_update_customer.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/employee_update_customer.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/inbox.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/inbox.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/login.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/mfa.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/mfa.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/new_transaction.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/new_transaction.html" afterDir="false" />
@@ -160,7 +167,7 @@
       <workItem from="1740365875844" duration="162000" />
       <workItem from="1740411886391" duration="11370000" />
       <workItem from="1740430232691" duration="3240000" />
-      <workItem from="1740433487478" duration="11040000" />
+      <workItem from="1740433487478" duration="17518000" />
     </task>
     <task id="LOCAL-00001" summary="Initial Config of the Project">
       <option name="closed" value="true" />
@@ -234,7 +241,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740444441919</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Fixed Nav Bar, Uniform the style">
+      <option name="closed" value="true" />
+      <created>1740450770928</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1740450770928</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -258,10 +273,11 @@
     <MESSAGE value="Fixed Inbox" />
     <MESSAGE value="Added Self signed certificate" />
     <MESSAGE value="Removed redundant code" />
-    <option name="LAST_COMMIT_MESSAGE" value="Removed redundant code" />
+    <MESSAGE value="Fixed Nav Bar, Uniform the style" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed Nav Bar, Uniform the style" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/MyBankCryptoSystem$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1740434385514" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
-    <SUITE FILE_PATH="coverage/MyBankCryptoSystem$MyBankCryptoSystem.coverage" NAME="MyBankCryptoSystem Coverage Results" MODIFIED="1740450099480" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MyBankCryptoSystem$MyBankCryptoSystem.coverage" NAME="MyBankCryptoSystem Coverage Results" MODIFIED="1740452073552" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

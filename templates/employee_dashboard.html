@@ -1,11 +1,9 @@
 {% extends "base.html" %}
-
 {% block title %}Employee Dashboard - MyBank{% endblock %}
-
 {% block content %}
-   <h1>Employee Dashboard</h1>
-   <p>Welcome, {{ session.username }}. Below is the list of client accounts:</p>
 
+   <h1>Employee Dashboard</h1>
+   <h5>Welcome, {{ session.username }}. Below is the list of client accounts:</h5>
    <!-- Entry for further operations -->
    <div class="mb-4">
        <a href="{{ url_for('message.inbox') }}" class="btn btn-primary">Inbox</a>
@@ -43,6 +41,5 @@
        {% endfor %}
      </tbody>
    </table>
-   <a href="{{ url_for('auth.logout') }}" class="btn btn-danger mt-3">Logout</a>
 
 {% endblock %}

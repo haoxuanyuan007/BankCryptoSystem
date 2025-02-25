@@ -1,37 +1,39 @@
 {% extends "base.html" %}
-
 {% block title %}Logs - MyBank{% endblock %}
-
 {% block content %}
-    <h1 class="text-center">Operation Logs</h1>
-    {% if logs %}
-        <div class="table-responsive">
-            <table class="table table-bordered">
-                <thead class="table-light">
-                <tr>
-                    <th>ID</th>
-                    <th>Employee ID</th>
-                    <th>Operation</th>
-                    <th>Details</th>
-                    <th>Timestamp</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for log in logs %}
+
+    <div class="row justify-content-center">
+        <h2 class="text-center">Operation Logs</h2>
+        {% if logs %}
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-light">
                     <tr>
-                        <td>{{ log.id }}</td>
-                        <td>{{ log.employee_id }}</td>
-                        <td>{{ log.operation }}</td>
-                        <td>{{ log.details }}</td>
-                        <td>{{ log.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+                        <th>ID</th>
+                        <th>Employee ID</th>
+                        <th>Operation</th>
+                        <th>Details</th>
+                        <th>Timestamp</th>
                     </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    {% else %}
-        <p class="text-center">No operation logs found.</p>
-    {% endif %}
+                    </thead>
+                    <tbody>
+                    {% for log in logs %}
+                        <tr>
+                            <td>{{ log.id }}</td>
+                            <td>{{ log.employee_id }}</td>
+                            <td>{{ log.operation }}</td>
+                            <td>{{ log.details }}</td>
+                            <td>{{ log.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-center">No operation logs found.</p>
+        {% endif %}
+
+    </div>
     <a href="{{ url_for('employee.dashboard') }}" class="btn btn-secondary mt-3">Back to Dashboard</a>
 
 {% endblock %}

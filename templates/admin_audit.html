@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Audit Logs - MyBank{% endblock %}
+{% block content %}
+
+    <h2 class="text-center">Audit Logs</h2>
+    {% if logs %}
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Employee ID</th>
+                    <th>Operation</th>
+                    <th>Details</th>
+                    <th>Timestamp</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for log in logs %}
+                    <tr>
+                        <td>{{ log.id }}</td>
+                        <td>{{ log.employee_id }}</td>
+                        <td>{{ log.operation }}</td>
+                        <td>{{ log.details }}</td>
+                        <td>{{ log.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="text-center">No audit logs found.</p>
+    {% endif %}
+    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary mt-3">Back to Dashboard</a>
+
+{% endblock %}

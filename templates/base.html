@@ -1,15 +1,12 @@
-<!-- templates/base.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}MyBank{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<!-- Uniform Nav Bar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
   <div class="container">
     <a class="navbar-brand" href="{{ url_for('index') }}">MyBank</a>
@@ -19,13 +16,27 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         {% if session.username %}
-          {% if session.role == 'employee' %}
-            <!-- For Employees -->
+          {% if session.role == 'admin' %}
+            <!-- Admin Nav Bar -->
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('employee.dashboard') }}">Dashboard</a>
+              <a class="nav-link" href="{{ url_for('admin.dashboard') }}">Admin Dashboard</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('employee.pending_transactions') }}">Pending Tx</a>
+              <a class="nav-link" href="{{ url_for('admin.audit') }}">Audit Logs</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('admin.add_employee') }}">Add Employee</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('admin.logout') }}">Logout</a>
+            </li>
+          {% elif session.role == 'employee' %}
+            <!-- Employee Nav Bar -->
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('employee.dashboard') }}">Employee Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('employee.pending_transactions') }}">Pending Transactions</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('employee.view_logs') }}">Operation Logs</a>
@@ -34,7 +45,7 @@
               <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
             </li>
           {% else %}
-            <!-- For Clients -->
+            <!-- Client Nav Bar -->
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('transaction.new_transaction') }}">New Transaction</a>
             </li>
@@ -66,7 +77,6 @@
             </li>
           {% endif %}
         {% else %}
-          <!-- For users that not logged in -->
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
           </li>
@@ -76,15 +86,16 @@
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('employee.login') }}">Employee Login</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('admin.login') }}">Admin Login</a>
+          </li>
         {% endif %}
       </ul>
     </div>
   </div>
 </nav>
 
-
 <div class="container mt-4">
-  <!-- Flash Messages -->
   {% with messages = get_flashed_messages() %}
     {% if messages %}
       <div class="alert alert-warning">
@@ -96,7 +107,6 @@
       </div>
     {% endif %}
   {% endwith %}
-
   {% block content %}{% endblock %}
 </div>
 

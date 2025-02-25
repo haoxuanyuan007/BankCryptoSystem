@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Admin MFA Verification - MyBank{% endblock %}
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-4">
+        <h2 class="text-center">MFA Verification</h2>
+        <form method="POST" action="{{ url_for('admin.mfa') }}">
+            <div class="mb-3">
+                <label for="otp" class="form-label">OTP Code:</label>
+                <input type="text" name="otp" id="otp" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Verify</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

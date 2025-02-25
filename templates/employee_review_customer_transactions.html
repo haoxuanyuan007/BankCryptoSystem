@@ -1,10 +1,8 @@
 {% extends "base.html" %}
-
 {% block title %}Review Transaction - MyBank{% endblock %}
-
 {% block content %}
 
-    <h1>Review Transactions for {{ customer.username }}</h1>
+    <h2>Review Transactions for {{ customer.username }}</h2>
     <p><strong>Account Number:</strong> {{ customer.account_number }}, <strong>Balance:</strong>
         ${{ "%.2f"|format(customer.balance) }}</p>
     {% if transactions %}

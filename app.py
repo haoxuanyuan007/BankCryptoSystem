@@ -8,6 +8,7 @@ from blueprints.transaction import transaction_bp
 from blueprints.account import account_bp
 from blueprints.employee import employee_bp
 from blueprints.message import message_bp
+from blueprints.admin import admin_bp
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -24,6 +25,8 @@ app.register_blueprint(account_bp, url_prefix='/account')
 app.register_blueprint(employee_bp, url_prefix='/employee')
 
 app.register_blueprint(message_bp, url_prefix='/message')
+
+app.register_blueprint(admin_bp, url_prefix='/admin')
 
 @app.route('/')
 def index():

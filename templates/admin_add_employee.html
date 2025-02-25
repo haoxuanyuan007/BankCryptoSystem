@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Add Employee - MyBank{% endblock %}
+{% block content %}
+
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <h2 class="text-center">Add New Employee</h2>
+            <form method="POST" action="{{ url_for('admin.add_employee') }}">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Employee Username</label>
+                    <input type="text" name="username" id="username" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" name="password" id="password" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Create Employee Account</button>
+            </form>
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary mt-3 w-100">Back to Dashboard</a>
+        </div>
+    </div>
+
+{% endblock %}

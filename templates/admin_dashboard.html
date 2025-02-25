@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard - MyBank{% endblock %}
+{% block content %}
+
+    <h1>Admin Dashboard</h1>
+    <h5>Welcome, {{ session.username }}. Here is the list of all users:</h5>
+    <div class="mb-4">
+        <a href="{{ url_for('admin.add_employee') }}" class="btn btn-success">Add New Employee</a>
+        <a href="{{ url_for('admin.audit') }}" class="btn btn-info">Audit Logs</a>
+    </div>
+    <table class="table table-bordered">
+        <thead class="table-primary">
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Account Number</th>
+            <th>Balance</th>
+            <th>Role</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.account_number }}</td>
+                <td>{{ "%.2f"|format(user.balance) }}</td>
+                <td>{{ user.role }}</td>
+                <td>
+                    {% if user.role == 'employee' %}
+                        <a href="{{ url_for('admin.update_employee', employee_id=user.id) }}"
+                           class="btn btn-sm btn-info">Update Employee</a>
+                        <a href="{{ url_for('admin.update_role', user_id=user.id) }}" class="btn btn-sm btn-warning">Update
+                            Role</a>
+                    {% else %}
+                        <a href="{{ url_for('admin.update_role', user_id=user.id) }}" class="btn btn-sm btn-warning">Update
+                            Role</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <a href="{{ url_for('admin.logout') }}" class="btn btn-danger mt-3">Logout</a>
+
+{% endblock %}

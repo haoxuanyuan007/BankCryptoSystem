@@ -1,9 +1,8 @@
 {% extends "base.html" %}
-
 {% block title %}Pending - MyBank{% endblock %}
-
 {% block content %}
-    <h1 class="text-center">Pending Transactions</h1>
+
+    <h2 class="text-center">Pending Transactions</h2>
     {% if transactions %}
         <div class="table-responsive">
             <table class="table table-bordered">
@@ -59,4 +58,5 @@
         <p class="text-center">No pending transactions found.</p>
     {% endif %}
     <a href="{{ url_for('employee.dashboard') }}" class="btn btn-secondary mt-3">Back to Dashboard</a>
+
 {% endblock %}
