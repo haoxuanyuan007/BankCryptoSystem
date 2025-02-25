@@ -3,6 +3,8 @@ from db.models import User, Transaction
 from extensions import db
 import random
 from db.models import OperationLog
+from config import Config
+from crypto.encryption import aes_decrypt, aes_encrypt
 
 employee_bp = Blueprint('employee', __name__)
 
@@ -191,3 +193,96 @@ def view_logs():
     logs = OperationLog.query.order_by(OperationLog.timestamp.desc()).all()
 
     return render_template('employee_logs.html', logs=logs)
+
+
+@employee_bp.route('/pending_transactions')
+def pending_transactions():
+    if 'user_id' not in session or session.get('role') != 'employee':
+        flash("Please log in as an employee to access this page.")
+        return redirect(url_for('employee.login'))
+
+    pending_tx = Transaction.query.filter_by(status='pending').order_by(Transaction.timestamp.desc()).all()
+
+    # 解密 encrypted_details（可选，如果需要展示解密后的详情）
+    encryption_key = Config.ENCRYPTION_KEY
+    for tx in pending_tx:
+        try:
+            enc_bytes = bytes.fromhex(tx.encrypted_details)
+            decrypted = aes_decrypt(enc_bytes, encryption_key)
+            tx.decrypted_details = decrypted
+        except Exception as e:
+            tx.decrypted_details = f"Decrypt error: {e}"
+
+    # 构造一个 parties 字典，用交易ID作为 key
+    parties = {}
+    for tx in pending_tx:
+        sender = User.query.get(tx.sender_id)
+        receiver = User.query.get(tx.receiver_id)
+        parties[tx.id] = {
+            'sender': sender,
+            'receiver': receiver
+        }
+
+    return render_template(
+        'employee_pending_transactions.html',
+        transactions=pending_tx,
+        parties=parties  # 关键：传入 parties
+    )
+
+
+@employee_bp.route('/transaction/<int:tx_id>/approve', methods=['POST'])
+def approve_transaction(tx_id):
+    if 'user_id' not in session or session.get('role') != 'employee':
+        flash("Please log in as an employee to access this page.")
+        return redirect(url_for('employee.login'))
+
+    tx = Transaction.query.get(tx_id)
+    if not tx or tx.status != 'pending':
+        flash("Transaction not found or not pending.")
+        return redirect(url_for('employee.pending_transactions'))
+
+    sender = User.query.get(tx.sender_id)
+    receiver = User.query.get(tx.receiver_id)
+    if sender.balance < tx.amount:
+        flash("Insufficient balance in sender's account.")
+        return redirect(url_for('employee.pending_transactions'))
+
+    sender.balance -= tx.amount
+    receiver.balance += tx.amount
+    tx.status = 'approved'
+
+    from db.models import OperationLog
+    log_entry = OperationLog(
+        employee_id=session['user_id'],
+        operation=f"Approved Transaction {tx_id}",
+        details="Approved pending transaction."
+    )
+    db.session.add(log_entry)
+    db.session.commit()
+    flash("Transaction approved successfully.")
+    return redirect(url_for('employee.pending_transactions'))
+
+
+@employee_bp.route('/transaction/<int:tx_id>/reject', methods=['POST'])
+def reject_transaction(tx_id):
+    if 'user_id' not in session or session.get('role') != 'employee':
+        flash("Please log in as an employee to access this page.")
+        return redirect(url_for('employee.login'))
+
+    tx = Transaction.query.get(tx_id)
+    if not tx or tx.status != 'pending':
+        flash("Transaction not found or not pending.")
+        return redirect(url_for('employee.pending_transactions'))
+
+    tx.status = 'rejected'
+
+    from db.models import OperationLog
+    log_entry = OperationLog(
+        employee_id=session['user_id'],
+        operation=f"Rejected Transaction {tx_id}",
+        details="Rejected pending transaction."
+    )
+    db.session.add(log_entry)
+    db.session.commit()
+    flash("Transaction rejected successfully.")
+    return redirect(url_for('employee.pending_transactions'))

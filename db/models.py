@@ -25,6 +25,7 @@ class User(db.Model):
     def __repr__(self):
         return f"<User {self.username} - Acct: {self.account_number}>"
 
+
 class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -33,9 +34,11 @@ class Transaction(db.Model):
     encrypted_details = db.Column(db.Text, nullable=False)
     integrity_hash = db.Column(db.String(64), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    status = db.Column(db.String(20), default='approved')
+    # Approved, Pending, Rejected
 
     def __repr__(self):
-        return f"<Transaction {self.id} from {self.sender_id} to {self.receiver_id}>"
+        return f"<Transaction {self.id} from {self.sender_id} to {self.receiver_id}, status: {self.status}>"
 
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)

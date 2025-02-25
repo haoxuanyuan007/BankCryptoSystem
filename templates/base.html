@@ -1,0 +1,105 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}MyBank{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<!-- Uniform Nav Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container">
+    <a class="navbar-brand" href="{{ url_for('index') }}">MyBank</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        {% if session.username %}
+          {% if session.role == 'employee' %}
+            <!-- For Employees -->
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('employee.dashboard') }}">Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('employee.pending_transactions') }}">Pending Tx</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('employee.view_logs') }}">Operation Logs</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+            </li>
+          {% else %}
+            <!-- For Clients -->
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('transaction.new_transaction') }}">New Transaction</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('transaction.view_transactions') }}">Transactions</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown">
+                Account
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="accountDropdown">
+                <li><a class="dropdown-item" href="{{ url_for('account.deposit') }}">Deposit</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('account.withdraw') }}">Withdraw</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('account.settings') }}">Settings</a></li>
+              </ul>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="messageDropdown" role="button" data-bs-toggle="dropdown">
+                Messages
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="messageDropdown">
+                <li><a class="dropdown-item" href="{{ url_for('message.inbox') }}">Inbox</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('message.outbox') }}">Outbox</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('message.send_message') }}">Send Message</a></li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+            </li>
+          {% endif %}
+        {% else %}
+          <!-- For users that not logged in -->
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('auth.register') }}">Register</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('employee.login') }}">Employee Login</a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+<div class="container mt-4">
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="alert alert-warning">
+        <ul class="mb-0">
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
