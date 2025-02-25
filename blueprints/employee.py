@@ -5,6 +5,7 @@ import random
 from db.models import OperationLog
 from config import Config
 from crypto.encryption import aes_decrypt, aes_encrypt
+from crypto.integrity import generate_hmac, verify_hmac
 
 employee_bp = Blueprint('employee', __name__)
 
@@ -35,7 +36,7 @@ def login():
     return render_template('employee_login.html')
 
 
-# 员工 MFA 验证页面
+# MFA For Employees
 @employee_bp.route('/mfa', methods=['GET', 'POST'])
 def mfa():
     # MFA for employees
@@ -69,26 +70,11 @@ def dashboard():
 
     # Search all Clients
     customers = User.query.filter_by(role='client').all()
+
     return render_template('employee_dashboard.html', customers=customers)
 
 
-# To let employee to view customer's details including name, balance and translations
-@employee_bp.route('/customer/<int:user_id>')
-def view_customer(user_id):
-    if 'user_id' not in session or session.get('role') != 'employee':
-        flash("Please log in as an employee to access this page.")
-        return redirect(url_for('employee.login'))
 
-    customer = User.query.get(user_id)
-    if not customer:
-        flash("Customer not found.")
-        return redirect(url_for('employee.dashboard'))
-
-    # Search all Clients
-    transactions = Transaction.query.filter(
-        (Transaction.sender_id == user_id) | (Transaction.receiver_id == user_id)
-    ).all()
-    return render_template('employee_customer.html', customer=customer, transactions=transactions)
 
 
 # Only view transactions but do not take actions
@@ -106,43 +92,6 @@ def review_customer_transactions(user_id):
     ).order_by(Transaction.timestamp.desc()).all()
     return render_template('employee_review_customer_transactions.html', customer=customer, transactions=transactions)
 
-
-# View and take actions
-@employee_bp.route('/transaction/<int:tx_id>/review', methods=['GET', 'POST'])
-def review_transaction(tx_id):
-    if 'user_id' not in session or session.get('role') != 'employee':
-        flash("Please log in as an employee to access this page.")
-        return redirect(url_for('employee.login'))
-
-    tx = Transaction.query.get(tx_id)
-    if not tx:
-        flash("Transaction not found.")
-        return redirect(url_for('employee.dashboard'))
-
-    sender_user = User.query.get(tx.sender_id)
-    receiver_user = User.query.get(tx.receiver_id)
-
-    if request.method == 'POST':
-        review_result = request.form.get('review_result')  # "Approved", "Rejected", "Flagged"
-        comments = request.form.get('comments')
-
-        from db.models import OperationLog
-        log_entry = OperationLog(
-            employee_id=session['user_id'],
-            operation=f"Reviewed Transaction {tx_id}",
-            details=f"Result: {review_result}. Comments: {comments}"
-        )
-        db.session.add(log_entry)
-        db.session.commit()
-        flash("Transaction review submitted.")
-        return redirect(url_for('employee.dashboard'))
-
-    return render_template(
-        'employee_review_transaction.html',
-        transaction=tx,
-        sender=sender_user,
-        receiver=receiver_user
-    )
 
 
 # Update customer's balance
@@ -192,6 +141,14 @@ def view_logs():
 
     logs = OperationLog.query.order_by(OperationLog.timestamp.desc()).all()
 
+    # Get employee's name
+    for log in logs:
+        employee = User.query.get(log.employee_id)
+        print(employee)
+        log.employee_name = employee.username if employee else "Unknown Employee"
+
+
+
     return render_template('employee_logs.html', logs=logs)
 
 
@@ -203,7 +160,7 @@ def pending_transactions():
 
     pending_tx = Transaction.query.filter_by(status='pending').order_by(Transaction.timestamp.desc()).all()
 
-    # 解密 encrypted_details（可选，如果需要展示解密后的详情）
+    # Decrypt Details
     encryption_key = Config.ENCRYPTION_KEY
     for tx in pending_tx:
         try:
@@ -213,7 +170,6 @@ def pending_transactions():
         except Exception as e:
             tx.decrypted_details = f"Decrypt error: {e}"
 
-    # 构造一个 parties 字典，用交易ID作为 key
     parties = {}
     for tx in pending_tx:
         sender = User.query.get(tx.sender_id)
@@ -223,10 +179,11 @@ def pending_transactions():
             'receiver': receiver
         }
 
+
     return render_template(
         'employee_pending_transactions.html',
         transactions=pending_tx,
-        parties=parties  # 关键：传入 parties
+        parties=parties
     )
 
 
@@ -286,3 +243,118 @@ def reject_transaction(tx_id):
     db.session.commit()
     flash("Transaction rejected successfully.")
     return redirect(url_for('employee.pending_transactions'))
+
+
+@employee_bp.route('/customer/<int:user_id>/update_info', methods=['GET', 'POST'])
+def update_client_info(user_id):
+    if 'user_id' not in session or session.get('role') not in ['employee', 'admin']:
+        flash("Please log in as an employee to access this page.")
+        return redirect(url_for('employee.login'))
+
+    # Get Client ID
+    client = User.query.filter_by(id=user_id, role='client').first()
+    if not client:
+        flash("Client not found.")
+        return redirect(url_for('employee.dashboard'))
+
+    encryption_key = Config.ENCRYPTION_KEY
+
+
+    # Decrypt Address
+    decrypted_address = ""
+    if client.address:
+        try:
+            decrypted_address = aes_decrypt(bytes.fromhex(client.address), encryption_key)
+        except Exception as e:
+            decrypted_address = "Decryption error"
+
+
+    if request.method == 'POST':
+        new_username = request.form.get('new_username')
+        new_address = request.form.get('new_address')
+        new_password = request.form.get('new_password')
+
+        # If username was entered, update
+        if new_username:
+            client.username = new_username
+
+        # If address was entered, update
+        if new_address:
+            encrypted_address = aes_encrypt(new_address, encryption_key).hex()
+            client.address = encrypted_address
+
+        if new_password:
+            client.set_password(new_password)
+
+        db.session.commit()
+        flash("Client info updated successfully.")
+        return redirect(url_for('employee.dashboard', user_id=user_id))
+
+    return render_template('employee_update_client_info.html',
+                           client=client, decrypted_address=decrypted_address)
+
+
+# Make Transaction on Behalf of Client
+@employee_bp.route('/make_transaction', methods=['GET', 'POST'])
+# Transaction between clients
+def make_transaction():
+    if 'user_id' not in session or session.get('role') not in ['employee', 'admin']:
+        flash("Please log in as an employee to access this page.")
+        return redirect(url_for('employee.login'))
+
+    if request.method == 'POST':
+        sender_id = request.form.get('sender_id')
+        receiver_id = request.form.get('receiver_id')
+        amount_str = request.form.get('amount')
+        details = request.form.get('details')
+
+        if not sender_id or not receiver_id or not amount_str or not details:
+            flash("All fields are required!")
+            return redirect(url_for('employee.make_transaction'))
+
+        try:
+            amount = float(amount_str)
+        except ValueError:
+            flash("Invalid amount!")
+            return redirect(url_for('employee.make_transaction'))
+
+        if amount <= 0:
+            flash("Amount must be greater than 0!")
+            return redirect(url_for('employee.make_transaction'))
+
+        sender = User.query.get(sender_id)
+        receiver = User.query.get(receiver_id)
+        if not sender or not receiver:
+            flash("Sender or receiver not found.")
+            return redirect(url_for('employee.make_transaction'))
+
+        if sender.balance < amount:
+            flash("Insufficient balance in sender account!")
+            return redirect(url_for('employee.make_transaction'))
+
+        # Encrypt and generate hmac
+        encryption_key = Config.ENCRYPTION_KEY
+        encrypted_bytes = aes_encrypt(details, encryption_key)
+        encrypted_details = encrypted_bytes.hex()
+        integrity = generate_hmac(encrypted_details, encryption_key)
+
+        # Auto approve since this is made by employee, assume client already had communicate with employee
+        new_tx = Transaction(
+            sender_id=sender.id,
+            receiver_id=receiver.id,
+            amount=amount,
+            encrypted_details=encrypted_details,
+            integrity_hash=integrity,
+            status="approved"
+        )
+        sender.balance -= amount
+        receiver.balance += amount
+        db.session.add(new_tx)
+        db.session.commit()
+
+        flash("Transaction processed successfully!")
+        return redirect(url_for('employee.dashboard'))
+
+        # GET: Get all Clients
+    clients = User.query.filter_by(role='client').all()
+    return render_template('employee_make_transaction.html', clients=clients)

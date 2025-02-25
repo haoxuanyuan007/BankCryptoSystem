@@ -41,7 +41,6 @@ def new_transaction():
             flash("Sender not found.")
             return redirect(url_for('transaction.new_transaction'))
 
-        # 根据输入查找接收方
         receiver = User.query.filter_by(account_number=receiver_input).first()
         if not receiver:
             receiver = User.query.filter_by(username=receiver_input).first()
@@ -54,15 +53,12 @@ def new_transaction():
         encrypted_details = encrypted_bytes.hex()
         integrity = generate_hmac(encrypted_details, encryption_key)
 
-        # 判断金额是否超过50000
         if amount > 50000:
-            # 检查余额是否足够
             if sender.balance < amount:
-                # 余额不足，直接拒绝，不创建记录
                 flash("Insufficient balance for large transaction. Transaction rejected.")
-                return redirect(url_for('transaction.new_transaction'))  # 修改：回到new_transaction
+                return redirect(url_for('transaction.new_transaction'))
             else:
-                # 余额足够，但需要员工审批 => 状态为pending，不更新余额
+                # Enough balance, change the state to pending and no update on balance until approval
                 new_tx = Transaction(
                     sender_id=sender.id,
                     receiver_id=receiver.id,
@@ -76,12 +72,11 @@ def new_transaction():
                 flash("Transaction is pending employee approval.")
                 return redirect(url_for('transaction.view_transactions'))
         else:
-            # 金额 <= 50000，自动审批
+            # It the amount is less than threshold, approve directly
             if sender.balance < amount:
                 flash("Insufficient balance!")
-                return redirect(url_for('transaction.new_transaction'))  # 修改：回到new_transaction
+                return redirect(url_for('transaction.new_transaction'))
 
-            # 自动approved
             new_tx = Transaction(
                 sender_id=sender.id,
                 receiver_id=receiver.id,
@@ -90,7 +85,7 @@ def new_transaction():
                 integrity_hash=integrity,
                 status="approved"
             )
-            # 更新余额
+            # Update balance
             db.session.add(new_tx)
             sender.balance -= amount
             receiver.balance += amount
@@ -124,7 +119,7 @@ def view_transactions():
         except Exception as e:
             tx.decrypted_details = f"Decryption error: {e}"
 
-        # 用于在模板中显示对方信息
+        # Show sender and receiver info
         if tx.sender_id == current_user_id:
             receiver = User.query.get(tx.receiver_id)
             if receiver:

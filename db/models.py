@@ -12,9 +12,9 @@ class User(db.Model):
     username = db.Column(db.String(64), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(20), default='client')
-
     account_number = db.Column(db.String(20), unique=True, nullable=False)
     balance = db.Column(db.Float, default=0.0)
+    address = db.Column(db.Text, nullable=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

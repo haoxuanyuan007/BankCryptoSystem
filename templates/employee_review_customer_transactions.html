@@ -2,7 +2,8 @@
 {% block title %}Review Transaction - MyBank{% endblock %}
 {% block content %}
 
-    <h2>Review Transactions for {{ customer.username }}</h2>
+    <h2>Transactions for {{ customer.username }}</h2>
+    <h5>Use this page to view and audit customer's transactions</h5>
     <p><strong>Account Number:</strong> {{ customer.account_number }}, <strong>Balance:</strong>
         ${{ "%.2f"|format(customer.balance) }}</p>
     {% if transactions %}
@@ -14,7 +15,6 @@
                     <th>Type</th>
                     <th>Amount</th>
                     <th>Time</th>
-                    <th>Action</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -30,10 +30,6 @@
                         </td>
                         <td>${{ "%.2f"|format(tx.amount) }}</td>
                         <td>{{ tx.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}</td>
-                        <td>
-                            <a href="{{ url_for('employee.review_transaction', tx_id=tx.id) }}"
-                               class="btn btn-sm btn-success">Review</a>
-                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>

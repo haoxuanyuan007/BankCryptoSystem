@@ -32,7 +32,6 @@ def send_message():
             return redirect(url_for('message.send_message'))
 
         encryption_key = Config.ENCRYPTION_KEY
-        # 对消息内容进行 AES 加密，并转换为十六进制字符串保存
         # Encry pt the message using AES that implemented before, convert to hex string to store
         encrypted_bytes = aes_encrypt(content, encryption_key)
         encrypted_content = encrypted_bytes.hex()

@@ -11,6 +11,8 @@
        <a href="{{ url_for('message.send_message') }}" class="btn btn-info">Send Message</a>
        <a href="{{ url_for('employee.view_logs') }}" class="btn btn-warning">Operation Logs</a>
        <a href="{{ url_for('employee.pending_transactions') }}" class="btn btn-dark">Pending Transactions</a>
+       <a href="{{ url_for('employee.make_transaction') }}" class="btn btn-success">Make Transaction</a>
+
    </div>
 
    <table class="table table-bordered">
@@ -32,9 +34,9 @@
            <td>${{ "%.2f"|format(customer.balance) }}</td>
            <td>
              <div class="btn-group" role="group">
-               <a href="{{ url_for('employee.view_customer', user_id=customer.id) }}" class="btn btn-sm btn-info">View Details</a>
                <a href="{{ url_for('employee.review_customer_transactions', user_id=customer.id) }}" class="btn btn-sm btn-success">Review Transactions</a>
-               <a href="{{ url_for('employee.update_customer', user_id=customer.id) }}" class="btn btn-sm btn-warning">Update Account</a>
+               <a href="{{ url_for('employee.update_customer', user_id=customer.id) }}" class="btn btn-sm btn-warning">Update Balance</a>
+               <a href="{{ url_for('employee.update_client_info', user_id=customer.id) }}" class="btn btn-sm btn-info">Update Client Info</a>
              </div>
            </td>
          </tr>

@@ -20,7 +20,7 @@
                     {% for log in logs %}
                         <tr>
                             <td>{{ log.id }}</td>
-                            <td>{{ log.employee_id }}</td>
+                            <td>{{ log.employee_name }}</td>
                             <td>{{ log.operation }}</td>
                             <td>{{ log.details }}</td>
                             <td>{{ log.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}</td>

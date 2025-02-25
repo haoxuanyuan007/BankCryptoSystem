@@ -7,7 +7,6 @@ from db.models import OperationLog
 
 admin_bp = Blueprint('admin', __name__)
 
-# 管理员登录（和其他角色不同，只有 role 为 'admin' 的用户可登录）
 @admin_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -29,7 +28,7 @@ def login():
             return redirect(url_for('admin.login'))
     return render_template('admin_login.html')
 
-# 管理员 MFA 验证页面
+# MFA For Admin
 @admin_bp.route('/mfa', methods=['GET', 'POST'])
 def mfa():
     if 'pending_admin' not in session or 'admin_mfa_code' not in session:
@@ -50,7 +49,7 @@ def mfa():
             return redirect(url_for('admin.mfa'))
     return render_template('admin_mfa.html')
 
-# 管理员仪表板：展示用户列表及部分统计信息
+
 @admin_bp.route('/dashboard')
 def dashboard():
     if 'user_id' not in session or session.get('role') != 'admin':
@@ -59,7 +58,8 @@ def dashboard():
     users = User.query.all()
     return render_template('admin_dashboard.html', users=users)
 
-# 修改用户角色（示例：将用户升级为员工或降级为客户）
+
+
 @admin_bp.route('/user/<int:user_id>/update_role', methods=['GET', 'POST'])
 def update_role(user_id):
     if 'user_id' not in session or session.get('role') != 'admin':
@@ -81,7 +81,7 @@ def update_role(user_id):
         return redirect(url_for('admin.dashboard'))
     return render_template('admin_update_role.html', user=user)
 
-# 管理员登出
+
 @admin_bp.route('/logout')
 def logout():
     session.clear()
@@ -102,7 +102,6 @@ def add_employee():
             flash("Username and password are required!")
             return redirect(url_for('admin.add_employee'))
 
-        # 检查是否已存在相同用户名（注意：如果采用全加密，查询时需要一致的加密逻辑）
         if User.query.filter_by(username=username).first():
             flash("Username already exists!")
             return redirect(url_for('admin.add_employee'))
@@ -128,7 +127,6 @@ def update_employee(employee_id):
         flash("Please log in as an admin to access this page.")
         return redirect(url_for('admin.login'))
 
-    # 仅查找角色为 employee 的用户
     employee = User.query.filter_by(id=employee_id, role='employee').first()
     if not employee:
         flash("Employee not found.")
@@ -155,4 +153,9 @@ def audit():
         return redirect(url_for('admin.login'))
 
     logs = OperationLog.query.order_by(OperationLog.timestamp.desc()).all()
+
+    for log in logs:
+        employee = User.query.get(log.employee_id)
+        log.employee_name = employee.username if employee else "Unknown Employee"
+
     return render_template('admin_audit.html', logs=logs)

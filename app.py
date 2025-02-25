@@ -9,6 +9,7 @@ from blueprints.account import account_bp
 from blueprints.employee import employee_bp
 from blueprints.message import message_bp
 from blueprints.admin import admin_bp
+from utils.utils import mask_account_number
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -33,6 +34,8 @@ def index():
     user_info = None
     if 'user_id' in session:
         user_info = User.query.get(session['user_id'])
+        if user_info:
+            user_info.account_number = mask_account_number(user_info.account_number)
     return render_template('index.html', user_info=user_info)
 
 if __name__ == '__main__':

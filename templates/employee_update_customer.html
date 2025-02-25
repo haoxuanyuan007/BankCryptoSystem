@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% block title %}Update Customer Acc - MyBank{% endblock %}
+{% block title %}Update Customer Balance - MyBank{% endblock %}
 {% block content %}
 
     <div class="row justify-content-center">
         <div class="col-md-4">
-            <h2>Update Customer Account</h2>
+            <h2>Update Customer Balance</h2>
             <div class="card mb-4">
                 <div class="card-body">
                     <p><strong>Username:</strong> {{ customer.username }}</p>
@@ -19,9 +19,9 @@
                 </div>
                 <button type="submit" class="btn btn-primary w-100">Update Account</button>
             </form>
-            <a href="{{ url_for('employee.view_customer', user_id=customer.id) }}" class="btn btn-secondary mt-3 w-100">Back
+            <a href="{{ url_for('employee.dashboard', user_id=customer.id) }}" class="btn btn-secondary mt-3 w-100">Back
                 to
-                Customer Details</a>
+                Dashboard</a>
         </div>
     </div>
 
