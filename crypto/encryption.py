@@ -1,7 +1,47 @@
 from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.PublicKey import RSA
 import os
+import hmac
+from hashlib import sha256
+import datetime
+MASTER_KEY_FILE = "master_key.txt"
+ROTATION_TIME = 5
 
+
+
+
+### Key Management ###
+def generate_random_master_key() -> str:
+    return os.urandom(16).hex()
+
+def store_master_key(key: str, filepath: str = MASTER_KEY_FILE):
+    with open(filepath, "w") as f:
+        f.write(key)
+
+def load_master_key(filepath: str = MASTER_KEY_FILE) -> str:
+    if not os.path.exists(filepath):
+        new_key = generate_random_master_key()
+        store_master_key(new_key, filepath)
+        return new_key
+    with open(filepath, "r") as f:
+        return f.read().strip()
+
+def is_master_key_expired(filepath: str = MASTER_KEY_FILE, rotation_time: int = ROTATION_TIME) -> bool:
+    if not os.path.exists(filepath):
+        return True
+    mtime = os.path.getmtime(filepath)
+    last_modified = datetime.datetime.fromtimestamp(mtime)
+    if datetime.datetime.now() - last_modified > datetime.timedelta(seconds=rotation_time):
+        return True
+    return False
+
+def auto_rotate_master_key(filepath: str = MASTER_KEY_FILE, rotation_time: int = ROTATION_TIME) -> str:
+    if is_master_key_expired(filepath, rotation_time):
+        new_key = generate_random_master_key()
+        store_master_key(new_key, filepath)
+        return new_key
+    else:
+        return load_master_key(filepath)
 
 
 ### AES Symmetric Encryption ###
@@ -26,7 +66,6 @@ def aes_encrypt(plaintext: str, key: str) -> bytes:
     ciphertext = cipher.encrypt(padded_plaintext)
     return iv + ciphertext
 
-
 def aes_decrypt(cipher_data: bytes, key: str) -> str:
     """
     Decrypt ciphertext, return plaintext.
@@ -48,7 +87,7 @@ def aes_decrypt(cipher_data: bytes, key: str) -> str:
     return plaintext_bytes.decode("utf-8")
 
 
-### RSA Asymmetric encryption
+### RSA Asymmetric encryption ###
 def generate_rsa_keypair(key_size: int = 2048):
     """
     Generate RSA keypair, return private key and public key in PEM (Privacy-Enhanced Mail) format.
@@ -58,7 +97,6 @@ def generate_rsa_keypair(key_size: int = 2048):
     public_key = key.public_key().export_key()
     return private_key, public_key
 
-
 def rsa_encrypt(plaintext: str, public_key_pem: str) -> bytes:
     """
     Use RSA to encrypt plaintext, return ciphertext.
@@ -67,7 +105,6 @@ def rsa_encrypt(plaintext: str, public_key_pem: str) -> bytes:
     cipher = PKCS1_OAEP.new(public_key_pem)
     ciphertext = cipher.encrypt(plaintext.encode("utf-8"))
     return ciphertext
-
 
 def rsa_decrypt(ciphertext: bytes, private_key_pem: bytes) -> str:
     """

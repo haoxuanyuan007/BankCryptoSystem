@@ -94,6 +94,7 @@ def settings():
             if new_password != confirm_password:
                 flash("New passwords do not match.")
                 return redirect(url_for('account.settings'))
+            # This function can encrypt and salt the password
             user.set_password(new_password)
             flash("Password updated successfully.")
 
@@ -104,6 +105,7 @@ def settings():
 
         # Init or update address, use aes encryption
         if new_address:
+            # Use AES to encrypt the address and put in db
             encrypted_address = aes_encrypt(new_address, encryption_key).hex()
             user.address = encrypted_address
             flash("Address updated successfully.")

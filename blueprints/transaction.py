@@ -111,9 +111,12 @@ def view_transactions():
     encryption_key = Config.ENCRYPTION_KEY
     for tx in transactions:
         try:
+            # Decrypt the cipher text
             encrypted_bytes = bytes.fromhex(tx.encrypted_details)
             decrypted = aes_decrypt(encrypted_bytes, encryption_key)
             tx.decrypted_details = decrypted
+
+            # Verify HMAC:     Cipher text           Encryption Key  HMAC provided by sender
             if not verify_hmac(tx.encrypted_details, encryption_key, tx.integrity_hash):
                 tx.decrypted_details += " (Integrity check failed)"
         except Exception as e:

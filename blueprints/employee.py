@@ -75,8 +75,6 @@ def dashboard():
 
 
 
-
-
 # Only view transactions but do not take actions
 @employee_bp.route('/customer/<int:user_id>/review_transactions')
 def review_customer_transactions(user_id):
@@ -107,28 +105,42 @@ def update_customer(user_id):
         return redirect(url_for('employee.dashboard'))
 
     if request.method == 'POST':
-        # Change balance (assume Client contact to employee to transfer money or some)
-        new_balance_str = request.form.get('balance')
+        transaction_type = request.form.get('transaction_type')  # 'deposit' or 'withdraw'
+        amount_str = request.form.get('amount')
         try:
-            new_balance = float(new_balance_str)
+            amount = float(amount_str)
         except ValueError:
-            flash("Invalid balance value.")
+            flash("Invalid amount value.")
+            return redirect(url_for('employee.update_customer', user_id=user_id))
+        if amount <= 0:
+            flash("Amount must be greater than 0.")
             return redirect(url_for('employee.update_customer', user_id=user_id))
 
         old_balance = customer.balance
-        customer.balance = new_balance
 
-        # Record the logs
-        from db.models import OperationLog
+        if transaction_type == 'deposit':
+            customer.balance += amount
+            operation = "Deposit"
+        elif transaction_type == 'withdraw':
+            if customer.balance < amount:
+                flash("Insufficient balance for withdrawal.")
+                return redirect(url_for('employee.update_customer', user_id=user_id))
+            customer.balance -= amount
+            operation = "Withdrawal"
+        else:
+            flash("Invalid transaction type.")
+            return redirect(url_for('employee.update_customer', user_id=user_id))
+
+        # Record Logs
         log_entry = OperationLog(
             employee_id=session['user_id'],
-            operation=f"Updated Customer {customer.username} Balance",
-            details=f"Old Balance: {old_balance}, New Balance: {new_balance}"
+            operation=f"{operation} for Customer {customer.username}",
+            details=f"Old Balance: {old_balance}, Amount: {amount}, New Balance: {customer.balance}"
         )
         db.session.add(log_entry)
         db.session.commit()
-        flash("Customer account updated successfully.")
-        return redirect(url_for('employee.view_customer', user_id=user_id))
+        flash("Transaction processed successfully.")
+        return redirect(url_for('employee.update_customer', user_id=user_id))
 
     return render_template('employee_update_customer.html', customer=customer)
 
@@ -336,6 +348,7 @@ def make_transaction():
         encryption_key = Config.ENCRYPTION_KEY
         encrypted_bytes = aes_encrypt(details, encryption_key)
         encrypted_details = encrypted_bytes.hex()
+        # Generate HMAC for transactions made by employee
         integrity = generate_hmac(encrypted_details, encryption_key)
 
         # Auto approve since this is made by employee, assume client already had communicate with employee

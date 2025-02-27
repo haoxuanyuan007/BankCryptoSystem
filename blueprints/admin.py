@@ -1,9 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
-from db.models import User, generate_account_number  # 假设 User 模型中有 username、role、account_number、balance 等字段
+from db.models import User, generate_account_number, OperationLog
 from extensions import db
 import random
-from db.models import OperationLog
-
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -28,7 +26,6 @@ def login():
             return redirect(url_for('admin.login'))
     return render_template('admin_login.html')
 
-# MFA For Admin
 @admin_bp.route('/mfa', methods=['GET', 'POST'])
 def mfa():
     if 'pending_admin' not in session or 'admin_mfa_code' not in session:
@@ -49,16 +46,14 @@ def mfa():
             return redirect(url_for('admin.mfa'))
     return render_template('admin_mfa.html')
 
-
 @admin_bp.route('/dashboard')
 def dashboard():
     if 'user_id' not in session or session.get('role') != 'admin':
         flash("Please log in as an admin to access this page.")
         return redirect(url_for('admin.login'))
-    users = User.query.all()
-    return render_template('admin_dashboard.html', users=users)
-
-
+    clients = User.query.filter_by(role='client').all()
+    employees = User.query.filter_by(role='employee').all()
+    return render_template('admin_dashboard.html', clients=clients, employees=employees)
 
 @admin_bp.route('/user/<int:user_id>/update_role', methods=['GET', 'POST'])
 def update_role(user_id):
@@ -81,31 +76,20 @@ def update_role(user_id):
         return redirect(url_for('admin.dashboard'))
     return render_template('admin_update_role.html', user=user)
 
-
-@admin_bp.route('/logout')
-def logout():
-    session.clear()
-    flash("Admin has been logged out.")
-    return redirect(url_for('index'))
-
-
 @admin_bp.route('/add_employee', methods=['GET', 'POST'])
 def add_employee():
     if 'user_id' not in session or session.get('role') != 'admin':
         flash("Please log in as an admin to access this page.")
         return redirect(url_for('admin.login'))
-
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
         if not username or not password:
             flash("Username and password are required!")
             return redirect(url_for('admin.add_employee'))
-
         if User.query.filter_by(username=username).first():
             flash("Username already exists!")
             return redirect(url_for('admin.add_employee'))
-
         new_emp = User(
             username=username,
             account_number=generate_account_number(),
@@ -117,21 +101,17 @@ def add_employee():
         db.session.commit()
         flash("New employee account created!")
         return redirect(url_for('admin.dashboard'))
-
     return render_template('admin_add_employee.html')
-
 
 @admin_bp.route('/employee/<int:employee_id>/update', methods=['GET', 'POST'])
 def update_employee(employee_id):
     if 'user_id' not in session or session.get('role') != 'admin':
         flash("Please log in as an admin to access this page.")
         return redirect(url_for('admin.login'))
-
     employee = User.query.filter_by(id=employee_id, role='employee').first()
     if not employee:
         flash("Employee not found.")
         return redirect(url_for('admin.dashboard'))
-
     if request.method == 'POST':
         new_username = request.form.get('username')
         new_password = request.form.get('password')
@@ -142,20 +122,35 @@ def update_employee(employee_id):
         db.session.commit()
         flash("Employee account updated successfully.")
         return redirect(url_for('admin.dashboard'))
-
     return render_template('admin_update_employee.html', employee=employee)
 
+@admin_bp.route('/employee/<int:employee_id>/delete', methods=['POST'])
+def delete_employee(employee_id):
+    if 'user_id' not in session or session.get('role') != 'admin':
+        flash("Please log in as an admin to access this page.")
+        return redirect(url_for('admin.login'))
+    employee = User.query.filter_by(id=employee_id, role='employee').first()
+    if not employee:
+        flash("Employee not found.")
+        return redirect(url_for('admin.dashboard'))
+    db.session.delete(employee)
+    db.session.commit()
+    flash("Employee account deleted successfully.")
+    return redirect(url_for('admin.dashboard'))
 
 @admin_bp.route('/audit')
 def audit():
     if 'user_id' not in session or session.get('role') != 'admin':
         flash("Please log in as an admin to access this page.")
         return redirect(url_for('admin.login'))
-
     logs = OperationLog.query.order_by(OperationLog.timestamp.desc()).all()
-
     for log in logs:
         employee = User.query.get(log.employee_id)
         log.employee_name = employee.username if employee else "Unknown Employee"
-
     return render_template('admin_audit.html', logs=logs)
+
+@admin_bp.route('/logout')
+def logout():
+    session.clear()
+    flash("Admin has been logged out.")
+    return redirect(url_for('index'))

@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Update Customer Balance - MyBank{% endblock %}
 {% block content %}
-
     <div class="row justify-content-center">
         <div class="col-md-4">
             <h2>Update Customer Balance</h2>
@@ -14,15 +13,21 @@
             </div>
             <form method="POST" action="{{ url_for('employee.update_customer', user_id=customer.id) }}">
                 <div class="mb-3">
-                    <label for="balance" class="form-label">New Balance:</label>
-                    <input type="number" step="0.01" name="balance" id="balance" class="form-control" required>
+                    <label for="transaction_type" class="form-label">Transaction Type:</label>
+                    <select name="transaction_type" id="transaction_type" class="form-select" required>
+                        <option value="">Select</option>
+                        <option value="deposit">Deposit</option>
+                        <option value="withdraw">Withdraw</option>
+                    </select>
                 </div>
-                <button type="submit" class="btn btn-primary w-100">Update Account</button>
+                <div class="mb-3">
+                    <label for="amount" class="form-label">Amount:</label>
+                    <input type="number" step="0.01" name="amount" id="amount" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Process Transaction</button>
             </form>
             <a href="{{ url_for('employee.dashboard', user_id=customer.id) }}" class="btn btn-secondary mt-3 w-100">Back
-                to
-                Dashboard</a>
+                to Dashboard</a>
         </div>
     </div>
-
 {% endblock %}

@@ -64,10 +64,12 @@ def inbox():
     encryption_key = Config.ENCRYPTION_KEY
     for msg in messages:
         try:
-            # Convert hex string back to bytes and decrypt
+            # Decrypt Messages
             encrypted_bytes = bytes.fromhex(msg.encrypted_content)
             decrypted = aes_decrypt(encrypted_bytes, encryption_key)
             msg.decrypted_content = decrypted
+
+            # Verify HMAC      Cipher text            Key             HMAC provided by sender
             if not verify_hmac(msg.encrypted_content, encryption_key, msg.integrity_hash):
                 msg.decrypted_content += " (Integrity check failed)"
         except Exception as e:
@@ -92,9 +94,12 @@ def outbox():
     encryption_key = Config.ENCRYPTION_KEY
     for msg in messages:
         try:
+            # Decrypt messages
             encrypted_bytes = bytes.fromhex(msg.encrypted_content)
             decrypted = aes_decrypt(encrypted_bytes, encryption_key)
             msg.decrypted_content = decrypted
+
+            # Verify HMAC generate by itself, here is just making sure the data get from db is unchanged
             if not verify_hmac(msg.encrypted_content, encryption_key, msg.integrity_hash):
                 msg.decrypted_content += " (Integrity check failed)"
         except Exception as e:

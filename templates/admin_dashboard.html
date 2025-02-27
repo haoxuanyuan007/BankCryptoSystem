@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 {% block title %}Admin Dashboard - MyBank{% endblock %}
 {% block content %}
+<h1>Admin Dashboard</h1>
+<div class="mb-4">
+    <a href="{{ url_for('admin.add_employee') }}" class="btn btn-success">Add New Employee</a>
+    <a href="{{ url_for('admin.audit') }}" class="btn btn-info">Audit Logs</a>
+</div>
 
-    <h1>Admin Dashboard</h1>
-    <h5>Welcome, {{ session.username }}. Here is the list of all users:</h5>
-    <div class="mb-4">
-        <a href="{{ url_for('admin.add_employee') }}" class="btn btn-success">Add New Employee</a>
-        <a href="{{ url_for('admin.audit') }}" class="btn btn-info">Audit Logs</a>
-    </div>
-    <table class="table table-bordered">
-        <thead class="table-primary">
+<h3>Clients</h3>
+<table class="table table-bordered">
+    <thead class="table-primary">
         <tr>
             <th>ID</th>
             <th>Username</th>
@@ -18,31 +18,50 @@
             <th>Role</th>
             <th>Actions</th>
         </tr>
-        </thead>
-        <tbody>
-        {% for user in users %}
-            <tr>
-                <td>{{ user.id }}</td>
-                <td>{{ user.username }}</td>
-                <td>{{ user.account_number }}</td>
-                <td>{{ "%.2f"|format(user.balance) }}</td>
-                <td>{{ user.role }}</td>
-                <td>
-                    {% if user.role == 'employee' %}
-                        <a href="{{ url_for('admin.update_employee', employee_id=user.id) }}"
-                           class="btn btn-sm btn-info">Update Employee</a>
-                        <a href="{{ url_for('admin.update_role', user_id=user.id) }}" class="btn btn-sm btn-warning">Update
-                            Role</a>
+    </thead>
+    <tbody>
+    {% for client in clients %}
+        <tr>
+            <td>{{ client.id }}</td>
+            <td>{{ client.username }}</td>
+            <td>{{ client.account_number }}</td>
+            <td>{{ "%.2f"|format(client.balance) }}</td>
+            <td>{{ client.role }}</td>
+            <td>
+                <a href="{{ url_for('admin.update_role', user_id=client.id) }}" class="btn btn-sm btn-warning">Update Role</a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
 
-                    {% else %}
-                        <a href="{{ url_for('admin.update_role', user_id=user.id) }}" class="btn btn-sm btn-warning">Update
-                            Role</a>
-                    {% endif %}
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    <a href="{{ url_for('admin.logout') }}" class="btn btn-danger mt-3">Logout</a>
-
+<h3>Employees</h3>
+<table class="table table-bordered">
+    <thead class="table-primary">
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Account Number</th>
+            <th>Role</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for employee in employees %}
+        <tr>
+            <td>{{ employee.id }}</td>
+            <td>{{ employee.username }}</td>
+            <td>{{ employee.account_number }}</td>
+            <td>{{ employee.role }}</td>
+            <td>
+                <a href="{{ url_for('admin.update_employee', employee_id=employee.id) }}" class="btn btn-sm btn-info">Update Employee</a>
+                <a href="{{ url_for('admin.update_role', user_id=employee.id) }}" class="btn btn-sm btn-warning">Update Role</a>
+                <form method="POST" action="{{ url_for('admin.delete_employee', employee_id=employee.id) }}" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this employee?');">
+                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
 {% endblock %}
