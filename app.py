@@ -1,5 +1,5 @@
 from flask import Flask, render_template, session
-from config import Config
+from config import Config, init_keys
 from extensions import db
 from flask_migrate import Migrate
 from blueprints.auth import auth_bp
@@ -10,6 +10,7 @@ from blueprints.employee import employee_bp
 from blueprints.message import message_bp
 from blueprints.admin import admin_bp
 from utils.utils import mask_account_number
+from scheduler import init_scheduler
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -34,6 +35,13 @@ app.register_blueprint(message_bp, url_prefix='/message')
 
 # Auth for Admin
 app.register_blueprint(admin_bp, url_prefix='/admin')
+
+with app.app_context():
+     init_keys(app)
+     Config.ENCRYPTION_KEY = app.config["ENCRYPTION_KEY"]
+     Config.KEY_VERSION = app.config["KEY_VERSION"]
+
+init_scheduler(app)
 
 @app.route('/')
 def index():

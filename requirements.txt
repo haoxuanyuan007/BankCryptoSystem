@@ -11,3 +11,5 @@ gunicornx
 dotenv
 Flask-Migrate
 PyMySQL
+cryptography
+apscheduler

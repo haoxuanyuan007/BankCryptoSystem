@@ -15,6 +15,11 @@ class User(db.Model):
     account_number = db.Column(db.String(20), unique=True, nullable=False)
     balance = db.Column(db.Float, default=0.0)
     address = db.Column(db.Text, nullable=True)
+    # HMAC
+    address_integrity_hash = db.Column(db.String(64), nullable=False)
+    contact = db.Column(db.Text, nullable=True)
+    contact_integrity_hash = db.Column(db.String(64), nullable=False)
+    key_version = db.Column(db.String(64), nullable=False, default='v1')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -25,28 +30,37 @@ class User(db.Model):
     def __repr__(self):
         return f"<User {self.username} - Acct: {self.account_number}>"
 
-
 class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     amount = db.Column(db.Float, nullable=False)
     encrypted_details = db.Column(db.Text, nullable=False)
+    # HMAC
     integrity_hash = db.Column(db.String(64), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     status = db.Column(db.String(20), default='approved')
+    key_version = db.Column(db.String(64), nullable=False, default='v1')
     # Approved, Pending, Rejected
 
     def __repr__(self):
         return f"<Transaction {self.id} from {self.sender_id} to {self.receiver_id}, status: {self.status}>"
+
+class KeyStore(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    version = db.Column(db.String(64), unique=True, nullable=False)  # Can be date with number
+    key_value = db.Column(db.String(128), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     encrypted_content = db.Column(db.Text, nullable=False)
+    # HMAC
     integrity_hash = db.Column(db.String(64), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    key_version = db.Column(db.String(64), nullable=False, default='v1')
 
     def __repr__(self):
         return f"<Message {self.id} from {self.sender_id} to {self.receiver_id}>"

@@ -1,14 +1,11 @@
 from flask import Blueprint, request, render_template, redirect, url_for, flash, session
 from extensions import db
-from db.models import Transaction
-from datetime import datetime
-from crypto.encryption import aes_encrypt, aes_decrypt
+from db.models import Transaction, User
+from crypto.encryption import aes_encrypt, aes_decrypt, get_key_by_version
 from config import Config
 from crypto.integrity import generate_hmac, verify_hmac
-from db.models import User
 
 transaction_bp = Blueprint('transaction', __name__)
-
 
 @transaction_bp.route('/new', methods=['GET', 'POST'])
 def new_transaction():
@@ -48,44 +45,49 @@ def new_transaction():
             flash("Receiver not found.")
             return redirect(url_for('transaction.new_transaction'))
 
+        # Get current (newest) key version
         encryption_key = Config.ENCRYPTION_KEY
+        current_version = Config.KEY_VERSION
+        print(encryption_key)
+        print(current_version)
         encrypted_bytes = aes_encrypt(details, encryption_key)
         encrypted_details = encrypted_bytes.hex()
         integrity = generate_hmac(encrypted_details, encryption_key)
 
+        # Any transaction more than 50000 have to be approved by employee
         if amount > 50000:
             if sender.balance < amount:
                 flash("Insufficient balance for large transaction. Transaction rejected.")
                 return redirect(url_for('transaction.new_transaction'))
             else:
-                # Enough balance, change the state to pending and no update on balance until approval
                 new_tx = Transaction(
                     sender_id=sender.id,
                     receiver_id=receiver.id,
                     amount=amount,
                     encrypted_details=encrypted_details,
                     integrity_hash=integrity,
-                    status="pending"
+                    status="pending",
+                    key_version=current_version
                 )
                 db.session.add(new_tx)
                 db.session.commit()
                 flash("Transaction is pending employee approval.")
                 return redirect(url_for('transaction.view_transactions'))
+
+        # If below the amount, can send without approving
         else:
-            # It the amount is less than threshold, approve directly
             if sender.balance < amount:
                 flash("Insufficient balance!")
                 return redirect(url_for('transaction.new_transaction'))
-
             new_tx = Transaction(
                 sender_id=sender.id,
                 receiver_id=receiver.id,
                 amount=amount,
                 encrypted_details=encrypted_details,
                 integrity_hash=integrity,
-                status="approved"
+                status="approved",
+                key_version=current_version
             )
-            # Update balance
             db.session.add(new_tx)
             sender.balance -= amount
             receiver.balance += amount
@@ -102,40 +104,32 @@ def view_transactions():
         flash("Please log in to view transactions.")
         return redirect(url_for('auth.login'))
 
+    # Get correct user for the session
     current_user_id = session['user_id']
     transactions = Transaction.query.filter(
         (Transaction.sender_id == current_user_id) |
         (Transaction.receiver_id == current_user_id)
     ).order_by(Transaction.timestamp.desc()).all()
 
-    encryption_key = Config.ENCRYPTION_KEY
+    # Decrypt and verify all the transaction details use the correct key version and show it to user
     for tx in transactions:
         try:
-            # Decrypt the cipher text
+            key_for_tx = get_key_by_version(tx.key_version)
             encrypted_bytes = bytes.fromhex(tx.encrypted_details)
-            decrypted = aes_decrypt(encrypted_bytes, encryption_key)
+            decrypted = aes_decrypt(encrypted_bytes, key_for_tx)
             tx.decrypted_details = decrypted
-
-            # Verify HMAC:     Cipher text           Encryption Key  HMAC provided by sender
-            if not verify_hmac(tx.encrypted_details, encryption_key, tx.integrity_hash):
+            if not verify_hmac(tx.encrypted_details, key_for_tx, tx.integrity_hash):
                 tx.decrypted_details += " (Integrity check failed)"
         except Exception as e:
             tx.decrypted_details = f"Decryption error: {e}"
 
-        # Show sender and receiver info
         if tx.sender_id == current_user_id:
             receiver = User.query.get(tx.receiver_id)
-            if receiver:
-                tx.counterparty = f"{receiver.username} ({receiver.account_number})"
-            else:
-                tx.counterparty = "Unknown"
+            tx.counterparty = f"{receiver.username} ({receiver.account_number})" if receiver else "Unknown"
             tx.type_label = "Sent"
         else:
             sender = User.query.get(tx.sender_id)
-            if sender:
-                tx.counterparty = f"{sender.username} ({sender.account_number})"
-            else:
-                tx.counterparty = "Unknown"
+            tx.counterparty = f"{sender.username} ({sender.account_number})" if sender else "Unknown"
             tx.type_label = "Received"
 
     return render_template('view_transactions.html', transactions=transactions)

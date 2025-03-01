@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from db.models import User
 from extensions import db
-from crypto.encryption import aes_encrypt, aes_decrypt
+from crypto.encryption import aes_encrypt, aes_decrypt, get_key_by_version
 from config import Config
+from crypto.integrity import generate_hmac, verify_hmac
 
 account_bp = Blueprint('account', __name__)
 
@@ -75,7 +76,7 @@ def settings():
         return redirect(url_for('auth.login'))
 
     user = User.query.get(session['user_id'])
-    encryption_key = Config.ENCRYPTION_KEY
+    # Can't use Config.ENCRYPTION_KEY here, because key might not be updated and address maybe old
 
     if request.method == 'POST':
         current_password = request.form.get('current_password')
@@ -83,6 +84,7 @@ def settings():
         confirm_password = request.form.get('confirm_password')
         new_username = request.form.get('new_username')
         new_address = request.form.get('new_address')
+        new_contact = request.form.get('new_contact')
 
         # Verify Current Password
         if not user.check_password(current_password):
@@ -94,7 +96,6 @@ def settings():
             if new_password != confirm_password:
                 flash("New passwords do not match.")
                 return redirect(url_for('account.settings'))
-            # This function can encrypt and salt the password
             user.set_password(new_password)
             flash("Password updated successfully.")
 
@@ -103,21 +104,59 @@ def settings():
             user.username = new_username
             flash("Username updated successfully.")
 
-        # Init or update address, use aes encryption
+        # Update Address
         if new_address:
-            # Use AES to encrypt the address and put in db
-            encrypted_address = aes_encrypt(new_address, encryption_key).hex()
-            user.address = encrypted_address
+
+            # Get Correct Key Version
+            current_key = Config.ENCRYPTION_KEY
+            current_version = Config.KEY_VERSION
+            enc_bytes = aes_encrypt(new_address, current_key)
+            user.address = enc_bytes.hex()
+            user.key_version = current_version
+            user.address_integrity_hash = generate_hmac(user.address, current_key)
             flash("Address updated successfully.")
+
+        if new_contact:
+            current_key = Config.ENCRYPTION_KEY
+            current_version = Config.KEY_VERSION
+            enc_bytes = aes_encrypt(new_contact, current_key)
+            user.contact = enc_bytes.hex()
+            user.key_version = current_version
+            user.contact_integrity_hash = generate_hmac(user.contact, current_key)
+            flash("Contact updated successfully.")
 
         db.session.commit()
         return redirect(url_for('account.settings'))
 
-    # Decrypt address to display
-    decrypted_address = None
-    if user.address:
-        try:
-            decrypted_address = aes_decrypt(bytes.fromhex(user.address), encryption_key)
-        except Exception as e:
-            decrypted_address = "Error decrypting address"
-    return render_template('settings.html', user=user, decrypted_address=decrypted_address)
+    # To show user the address
+    print("Address Hash: ", user.address)
+    try:
+        # Find Correct Key Version
+        key_for_addr = get_key_by_version(user.key_version)
+        print("Key Version: ", user.key_version)
+        print("Key For Address: ", key_for_addr)
+        encrypted_bytes = bytes.fromhex(user.address)
+        print("Encrypted Address Bytes: ", encrypted_bytes)
+        decrypted = aes_decrypt(encrypted_bytes, key_for_addr)
+        print("Decrypted Address: ", decrypted)
+        decrypted_address = decrypted
+        print("Address: " + decrypted_address)
+        if not verify_hmac(user.address, key_for_addr, user.address_integrity_hash):
+            decrypted_address += " (Integrity check failed)"
+    except Exception as e:
+        decrypted_address = f"Error decrypting address: {e}"
+
+    # To show user the contact
+    try:
+        key_for_contact = get_key_by_version(user.key_version)
+        encrypted_bytes = bytes.fromhex(user.contact)
+        decrypted = aes_decrypt(encrypted_bytes, key_for_contact)
+        decrypted_contact = decrypted
+        if not verify_hmac(user.contact, key_for_contact, user.contact_integrity_hash):
+            decrypted_contact += " (Integrity check failed)"
+    except Exception as e:
+        decrypted_contact = f"Error decrypting contact: {e} (Format is not right or Contact is Empty)"
+
+
+    return render_template('settings.html', user=user, decrypted_address=decrypted_address,
+                           decrypted_contact=decrypted_contact)

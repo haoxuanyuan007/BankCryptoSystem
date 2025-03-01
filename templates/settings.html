@@ -10,6 +10,7 @@
                     <p><strong>Account Number:</strong> {{ user.account_number }}</p>
                     <p><strong>Balance:</strong> ${{ "%.2f"|format(user.balance) }}</p>
                     <p><strong>Address:</strong> {{ decrypted_address if decrypted_address else "Not Set" }}</p>
+                    <p><strong>Contact:</strong> {{ decrypted_contact if decrypted_contact else "Not Set" }}</p>
                 </div>
             </div>
             <form method="POST" action="{{ url_for('account.settings') }}">
@@ -42,6 +43,12 @@
                     <input type="text" name="new_address" id="new_address" class="form-control"
                            placeholder="Leave blank if unchanged">
                 </div>
+                <div class="mb-3">
+                    <label for="new_contact" class="form-label">New Contact:</label>
+                    <input type="text" name="new_contact" id="new_contact" class="form-control"
+                           placeholder="Leave blank if unchanged">
+                </div>
+
                 <button type="submit" class="btn btn-primary">Update Settings</button>
             </form>
             <a href="{{ url_for('index') }}" class="btn btn-secondary mt-3">Back to Home</a>

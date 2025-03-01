@@ -4,18 +4,28 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c85c22e6-1bd4-42ef-a988-dc9498e63272" name="Changes" comment="Translated comments.&#10;Allow employee help client to transfer money.">
+    <list default="true" id="c85c22e6-1bd4-42ef-a988-dc9498e63272" name="Changes" comment="Preparation for KMS">
+      <change afterPath="$PROJECT_DIR$/scheduler.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blueprints/account.py" beforeDir="false" afterPath="$PROJECT_DIR$/blueprints/account.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blueprints/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/blueprints/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blueprints/employee.py" beforeDir="false" afterPath="$PROJECT_DIR$/blueprints/employee.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blueprints/message.py" beforeDir="false" afterPath="$PROJECT_DIR$/blueprints/message.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blueprints/transaction.py" beforeDir="false" afterPath="$PROJECT_DIR$/blueprints/transaction.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/crypto/encryption.py" beforeDir="false" afterPath="$PROJECT_DIR$/crypto/encryption.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/admin_dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/admin_dashboard.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/employee_update_customer.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/employee_update_customer.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/db/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/master_key.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/README" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/alembic.ini" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/env.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/script.py.mako" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/versions/17a3ec5e7a34_add_message_model.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/versions/3c03ecd97eba_.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/versions/43d5bbdbad70_.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/versions/6234ab1e1add_add_operationlog_model.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/versions/91834d522b41_.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/settings.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/settings.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,8 +36,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Flask Main" />
-        <option value="Python Script" />
         <option value="HTML File" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
@@ -153,7 +163,11 @@
       <workItem from="1740532217194" duration="9000" />
       <workItem from="1740532230364" duration="94000" />
       <workItem from="1740564278118" duration="5520000" />
-      <workItem from="1740611061738" duration="1437000" />
+      <workItem from="1740611061738" duration="9308000" />
+      <workItem from="1740629740143" duration="7637000" />
+      <workItem from="1740740082554" duration="14771000" />
+      <workItem from="1740776854863" duration="1275000" />
+      <workItem from="1740847441651" duration="2422000" />
     </task>
     <task id="LOCAL-00001" summary="Initial Config of the Project">
       <option name="closed" value="true" />
@@ -259,7 +273,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740508791503</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Preparation for KMS">
+      <option name="closed" value="true" />
+      <created>1740621901508</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1740621901508</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -286,10 +308,11 @@
     <MESSAGE value="Fixed Nav Bar, Uniform the style" />
     <MESSAGE value="Added admin view" />
     <MESSAGE value="Translated comments.&#10;Allow employee help client to transfer money." />
-    <option name="LAST_COMMIT_MESSAGE" value="Translated comments.&#10;Allow employee help client to transfer money." />
+    <MESSAGE value="Preparation for KMS" />
+    <option name="LAST_COMMIT_MESSAGE" value="Preparation for KMS" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/MyBankCryptoSystem$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1740522246983" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
-    <SUITE FILE_PATH="coverage/MyBankCryptoSystem$MyBankCryptoSystem.coverage" NAME="MyBankCryptoSystem Coverage Results" MODIFIED="1740611839240" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MyBankCryptoSystem$MyBankCryptoSystem.coverage" NAME="MyBankCryptoSystem Coverage Results" MODIFIED="1740755954654" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
