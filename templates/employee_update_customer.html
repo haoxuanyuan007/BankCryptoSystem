@@ -3,8 +3,11 @@
 {% block content %}
     <div class="row justify-content-center">
         <div class="col-md-4">
-            <h2>Update Customer Balance</h2>
-            <div class="card mb-4">
+            <div class="card shadow-lg border-0 mb-4">
+                <div class="card-header"
+                     style="background: linear-gradient(90deg, #5a46c8, #a249ed, #be80b0); color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);">
+                    <h2 class="card-title mb-0 text-center">Update Customer Balance</h2>
+                </div>
                 <div class="card-body">
                     <p><strong>Username:</strong> {{ customer.username }}</p>
                     <p><strong>Account Number:</strong> {{ customer.account_number }}</p>

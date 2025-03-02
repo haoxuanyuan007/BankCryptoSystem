@@ -1,9 +1,13 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
-from db.models import User, generate_account_number, OperationLog
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, current_app
+from db.models import User, generate_account_number, OperationLog, SystemConfig
 from extensions import db
+from crypto.digital_signature import generate_user_keypair, encrypt_user_private_key
+from crypto.encryption import get_rotation_time
+from apscheduler.triggers.interval import IntervalTrigger
 import random
 
 admin_bp = Blueprint('admin', __name__)
+
 
 @admin_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -26,6 +30,7 @@ def login():
             return redirect(url_for('admin.login'))
     return render_template('admin_login.html')
 
+
 @admin_bp.route('/mfa', methods=['GET', 'POST'])
 def mfa():
     if 'pending_admin' not in session or 'admin_mfa_code' not in session:
@@ -46,6 +51,7 @@ def mfa():
             return redirect(url_for('admin.mfa'))
     return render_template('admin_mfa.html')
 
+
 @admin_bp.route('/dashboard')
 def dashboard():
     if 'user_id' not in session or session.get('role') != 'admin':
@@ -54,6 +60,7 @@ def dashboard():
     clients = User.query.filter_by(role='client').all()
     employees = User.query.filter_by(role='employee').all()
     return render_template('admin_dashboard.html', clients=clients, employees=employees)
+
 
 @admin_bp.route('/user/<int:user_id>/update_role', methods=['GET', 'POST'])
 def update_role(user_id):
@@ -76,6 +83,7 @@ def update_role(user_id):
         return redirect(url_for('admin.dashboard'))
     return render_template('admin_update_role.html', user=user)
 
+
 @admin_bp.route('/add_employee', methods=['GET', 'POST'])
 def add_employee():
     if 'user_id' not in session or session.get('role') != 'admin':
@@ -97,11 +105,20 @@ def add_employee():
             role="employee"
         )
         new_emp.set_password(password)
+
+        # Generate Key Pair
+        private_key, public_key = generate_user_keypair()
+        # Encrypt Private Key
+        encrypted_private_key = encrypt_user_private_key(private_key)
+        new_emp.private_key = encrypted_private_key
+        new_emp.public_key = public_key.decode("utf-8")
+
         db.session.add(new_emp)
         db.session.commit()
         flash("New employee account created!")
         return redirect(url_for('admin.dashboard'))
     return render_template('admin_add_employee.html')
+
 
 @admin_bp.route('/employee/<int:employee_id>/update', methods=['GET', 'POST'])
 def update_employee(employee_id):
@@ -124,6 +141,7 @@ def update_employee(employee_id):
         return redirect(url_for('admin.dashboard'))
     return render_template('admin_update_employee.html', employee=employee)
 
+
 @admin_bp.route('/employee/<int:employee_id>/delete', methods=['POST'])
 def delete_employee(employee_id):
     if 'user_id' not in session or session.get('role') != 'admin':
@@ -138,6 +156,7 @@ def delete_employee(employee_id):
     flash("Employee account deleted successfully.")
     return redirect(url_for('admin.dashboard'))
 
+
 @admin_bp.route('/audit')
 def audit():
     if 'user_id' not in session or session.get('role') != 'admin':
@@ -149,8 +168,57 @@ def audit():
         log.employee_name = employee.username if employee else "Unknown Employee"
     return render_template('admin_audit.html', logs=logs)
 
+
 @admin_bp.route('/logout')
 def logout():
     session.clear()
     flash("Admin has been logged out.")
     return redirect(url_for('index'))
+
+
+@admin_bp.route('/config', methods=['GET', 'POST'])
+def config():
+    if 'user_id' not in session or session.get('role') != 'admin':
+        flash("Please log in as an admin to access this page.")
+        return redirect(url_for('admin.login'))
+
+    # Get or create config record
+    value_config = SystemConfig.query.filter_by(key="rotation_time_value").first()
+    unit_config = SystemConfig.query.filter_by(key="rotation_time_unit").first()
+    if not value_config:
+        value_config = SystemConfig(key="rotation_time_value", value="5")  # Default: 5
+        db.session.add(value_config)
+    if not unit_config:
+        unit_config = SystemConfig(key="rotation_time_unit", value="seconds")  # Default Unit: seconds
+        db.session.add(unit_config)
+    db.session.commit()
+
+    if request.method == 'POST':
+        rotation_value = request.form.get('rotation_value')
+        rotation_unit = request.form.get('rotation_unit')
+        if not rotation_value.isdigit() or int(rotation_value) <= 0:
+            flash("Please enter valid positive integer as a rotation time.")
+            return redirect(url_for('admin.config'))
+        if rotation_unit not in ['seconds', 'hours', 'days']:
+            flash("Please pick a valid unit.")
+            return redirect(url_for('admin.config'))
+        # Save the config
+        value_config.value = rotation_value
+        unit_config.value = rotation_unit
+        db.session.commit()
+        flash("Key rotation time changed successfully!")
+
+        # Dynamically update APScheduler job interval
+        new_interval = get_rotation_time()
+        try:
+            current_app.scheduler.modify_job(
+                job_id="rotate_keys_job",
+                trigger=IntervalTrigger(seconds=new_interval)
+            )
+            flash(f"Scheduler interval updated to {new_interval} seconds.")
+        except Exception as e:
+            flash("Failed to update scheduler interval: " + str(e))
+
+        return redirect(url_for('admin.dashboard'))
+
+    return render_template('admin_config.html', rotation_value=value_config.value, rotation_unit=unit_config.value)

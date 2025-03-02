@@ -106,7 +106,6 @@ def settings():
 
         # Update Address
         if new_address:
-
             # Get Correct Key Version
             current_key = Config.ENCRYPTION_KEY
             current_version = Config.KEY_VERSION
@@ -129,34 +128,33 @@ def settings():
         return redirect(url_for('account.settings'))
 
     # To show user the address
-    print("Address Hash: ", user.address)
-    try:
-        # Find Correct Key Version
-        key_for_addr = get_key_by_version(user.key_version)
-        print("Key Version: ", user.key_version)
-        print("Key For Address: ", key_for_addr)
-        encrypted_bytes = bytes.fromhex(user.address)
-        print("Encrypted Address Bytes: ", encrypted_bytes)
-        decrypted = aes_decrypt(encrypted_bytes, key_for_addr)
-        print("Decrypted Address: ", decrypted)
-        decrypted_address = decrypted
-        print("Address: " + decrypted_address)
-        if not verify_hmac(user.address, key_for_addr, user.address_integrity_hash):
-            decrypted_address += " (Integrity check failed)"
-    except Exception as e:
-        decrypted_address = f"Error decrypting address: {e}"
+    if user.address:
+        try:
+            # Find Correct Key Version
+            key_for_addr = get_key_by_version(user.key_version)
+            encrypted_bytes = bytes.fromhex(user.address)
+            decrypted = aes_decrypt(encrypted_bytes, key_for_addr)
+            decrypted_address = decrypted
+            if not verify_hmac(user.address, key_for_addr, user.address_integrity_hash):
+                decrypted_address += " (Integrity check failed)"
+        except Exception as e:
+            decrypted_address = f"Error decrypting address: {e}"
+    else:
+        decrypted_address = "Address not set"
 
     # To show user the contact
-    try:
-        key_for_contact = get_key_by_version(user.key_version)
-        encrypted_bytes = bytes.fromhex(user.contact)
-        decrypted = aes_decrypt(encrypted_bytes, key_for_contact)
-        decrypted_contact = decrypted
-        if not verify_hmac(user.contact, key_for_contact, user.contact_integrity_hash):
-            decrypted_contact += " (Integrity check failed)"
-    except Exception as e:
-        decrypted_contact = f"Error decrypting contact: {e} (Format is not right or Contact is Empty)"
-
+    if user.contact:
+        try:
+            key_for_contact = get_key_by_version(user.key_version)
+            encrypted_bytes = bytes.fromhex(user.contact)
+            decrypted = aes_decrypt(encrypted_bytes, key_for_contact)
+            decrypted_contact = decrypted
+            if not verify_hmac(user.contact, key_for_contact, user.contact_integrity_hash):
+                decrypted_contact += " (Integrity check failed)"
+        except Exception as e:
+            decrypted_contact = f"Error decrypting contact: {e} (Format is not right or Contact is Empty)"
+    else:
+        decrypted_contact = "Contact not set"
 
     return render_template('settings.html', user=user, decrypted_address=decrypted_address,
                            decrypted_contact=decrypted_contact)

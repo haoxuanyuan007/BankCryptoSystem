@@ -6,6 +6,7 @@ from db.models import OperationLog
 from config import Config
 from crypto.encryption import aes_decrypt, aes_encrypt
 from crypto.integrity import generate_hmac, verify_hmac
+from crypto.digital_signature import sign_data, decrypt_user_private_key
 
 employee_bp = Blueprint('employee', __name__)
 
@@ -74,7 +75,6 @@ def dashboard():
     return render_template('employee_dashboard.html', customers=customers)
 
 
-
 # Only view transactions but do not take actions
 @employee_bp.route('/customer/<int:user_id>/review_transactions')
 def review_customer_transactions(user_id):
@@ -89,7 +89,6 @@ def review_customer_transactions(user_id):
         (Transaction.sender_id == user_id) | (Transaction.receiver_id == user_id)
     ).order_by(Transaction.timestamp.desc()).all()
     return render_template('employee_review_customer_transactions.html', customer=customer, transactions=transactions)
-
 
 
 # Update customer's balance
@@ -159,8 +158,6 @@ def view_logs():
         print(employee)
         log.employee_name = employee.username if employee else "Unknown Employee"
 
-
-
     return render_template('employee_logs.html', logs=logs)
 
 
@@ -190,7 +187,6 @@ def pending_transactions():
             'sender': sender,
             'receiver': receiver
         }
-
 
     return render_template(
         'employee_pending_transactions.html',
@@ -271,7 +267,6 @@ def update_client_info(user_id):
 
     encryption_key = Config.ENCRYPTION_KEY
 
-
     # Decrypt Address
     decrypted_address = ""
     if client.address:
@@ -279,7 +274,6 @@ def update_client_info(user_id):
             decrypted_address = aes_decrypt(bytes.fromhex(client.address), encryption_key)
         except Exception as e:
             decrypted_address = "Decryption error"
-
 
     if request.method == 'POST':
         new_username = request.form.get('new_username')
@@ -351,6 +345,16 @@ def make_transaction():
         # Generate HMAC for transactions made by employee
         integrity = generate_hmac(encrypted_details, encryption_key)
 
+        # Generate Digital Signature
+        signature = None
+        if sender.private_key:
+            try:
+                sender_private_key = decrypt_user_private_key(sender.private_key, sender.key_version)
+                signature = sign_data(details, sender_private_key)
+            except Exception as e:
+                flash("Error signing transaction: " + str(e))
+                return redirect(url_for('employee.make_transaction'))
+
         # Auto approve since this is made by employee, assume client already had communicate with employee
         new_tx = Transaction(
             sender_id=sender.id,
@@ -358,7 +362,9 @@ def make_transaction():
             amount=amount,
             encrypted_details=encrypted_details,
             integrity_hash=integrity,
-            status="approved"
+            status="approved",
+            signature=signature,
+            key_version=Config.KEY_VERSION
         )
         sender.balance -= amount
         receiver.balance += amount

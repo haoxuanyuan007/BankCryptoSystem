@@ -1,47 +1,132 @@
 {% extends "base.html" %}
 {% block title %}Employee Dashboard - MyBank{% endblock %}
 {% block content %}
+    <style>
+        .btn-custom-inbox {
+            background-color: #383dca;
+            border-color: #383dca;
+            color: #fff;
+        }
 
-   <h1>Employee Dashboard</h1>
-   <h5>Welcome, {{ session.username }}. Below is the list of client accounts:</h5>
-   <!-- Entry for further operations -->
-   <div class="mb-4">
-       <a href="{{ url_for('message.inbox') }}" class="btn btn-primary">Inbox</a>
-       <a href="{{ url_for('message.outbox') }}" class="btn btn-secondary">Outbox</a>
-       <a href="{{ url_for('message.send_message') }}" class="btn btn-info">Send Message</a>
-       <a href="{{ url_for('employee.view_logs') }}" class="btn btn-warning">Operation Logs</a>
-       <a href="{{ url_for('employee.pending_transactions') }}" class="btn btn-dark">Pending Transactions</a>
-       <a href="{{ url_for('employee.make_transaction') }}" class="btn btn-success">Make Transaction</a>
+        .btn-custom-outbox {
+            background-color: #a249ed;
+            border-color: #a249ed;
+            color: #fff;
+        }
 
-   </div>
+        .btn-custom-send {
+            background-color: #da9595;
+            border-color: #da9595;
+            color: #fff;
+        }
 
-   <table class="table table-bordered">
-     <thead>
-       <tr>
-         <th>ID</th>
-         <th>Username</th>
-         <th>Account Number</th>
-         <th>Balance</th>
-         <th>Actions</th>
-       </tr>
-     </thead>
-     <tbody>
-       {% for customer in customers %}
-         <tr>
-           <td>{{ customer.id }}</td>
-           <td>{{ customer.username }}</td>
-           <td>{{ customer.account_number }}</td>
-           <td>${{ "%.2f"|format(customer.balance) }}</td>
-           <td>
-             <div class="btn-group" role="group">
-               <a href="{{ url_for('employee.review_customer_transactions', user_id=customer.id) }}" class="btn btn-sm btn-success">Review Transactions</a>
-               <a href="{{ url_for('employee.update_customer', user_id=customer.id) }}" class="btn btn-sm btn-warning">Update Balance</a>
-               <a href="{{ url_for('employee.update_client_info', user_id=customer.id) }}" class="btn btn-sm btn-info">Update Client Info</a>
-             </div>
-           </td>
-         </tr>
-       {% endfor %}
-     </tbody>
-   </table>
+        .btn-custom-logs {
+            background-color: #00897b;
+            border-color: #00897b;
+            color: #fff;
+        }
 
+        .btn-custom-pending {
+            background-color: #fbc02d;
+            border-color: #fbc02d;
+            color: #fff;
+        }
+
+        .btn-custom-make {
+            background-color: #ef5350;
+            border-color: #ef5350;
+            color: #fff;
+        }
+
+        /* Hover */
+        .btn-custom-inbox:hover {
+            background-color: #2e33b5;
+            border-color: #2e33b5;
+        }
+
+        .btn-custom-outbox:hover {
+            background-color: #8a3de0;
+            border-color: #8a3de0;
+        }
+
+        .btn-custom-send:hover {
+            background-color: #d08282;
+            border-color: #d08282;
+        }
+
+        .btn-custom-logs:hover {
+            background-color: #00796b;
+            border-color: #00796b;
+        }
+
+        .btn-custom-pending:hover {
+            background-color: #f9a825;
+            border-color: #f9a825;
+        }
+
+        .btn-custom-make:hover {
+            background-color: #e53935;
+            border-color: #e53935;
+        }
+    </style>
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header"
+                         style="background: linear-gradient(90deg, #383dca, #a249ed, #da9595); color: #fff;">
+                        <h2 class="card-title mb-0">Employee Dashboard</h2>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="mb-4">Welcome, {{ session.username }}. Below is the list of client accounts:</h5>
+                        <div class="mb-4">
+                            <a href="{{ url_for('message.inbox') }}" class="btn btn-custom-inbox me-2">Inbox</a>
+                            <a href="{{ url_for('message.outbox') }}" class="btn btn-custom-outbox me-2">Outbox</a>
+                            <a href="{{ url_for('message.send_message') }}" class="btn btn-custom-send me-2">Send
+                                Message</a>
+                            <a href="{{ url_for('employee.view_logs') }}" class="btn btn-custom-logs me-2">Operation
+                                Logs</a>
+                            <a href="{{ url_for('employee.pending_transactions') }}"
+                               class="btn btn-custom-pending me-2">Pending Transactions</a>
+                            <a href="{{ url_for('employee.make_transaction') }}" class="btn btn-custom-make">Make
+                                Transaction</a>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped align-middle">
+                                <thead class="table-light">
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Username</th>
+                                    <th scope="col">Account Number</th>
+                                    <th scope="col">Balance</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for customer in customers %}
+                                    <tr>
+                                        <td>{{ customer.id }}</td>
+                                        <td>{{ customer.username }}</td>
+                                        <td>{{ customer.account_number }}</td>
+                                        <td>${{ "%.2f"|format(customer.balance) }}</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <a href="{{ url_for('employee.review_customer_transactions', user_id=customer.id) }}"
+                                                   class="btn btn-custom-inbox">Review Transactions</a>
+                                                <a href="{{ url_for('employee.update_customer', user_id=customer.id) }}"
+                                                   class="btn btn-custom-outbox">Update Balance</a>
+                                                <a href="{{ url_for('employee.update_client_info', user_id=customer.id) }}"
+                                                   class="btn btn-custom-send">Update Client Info</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

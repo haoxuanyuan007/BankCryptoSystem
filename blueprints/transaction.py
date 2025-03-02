@@ -1,11 +1,14 @@
+# transaction.py:
 from flask import Blueprint, request, render_template, redirect, url_for, flash, session
 from extensions import db
 from db.models import Transaction, User
 from crypto.encryption import aes_encrypt, aes_decrypt, get_key_by_version
 from config import Config
 from crypto.integrity import generate_hmac, verify_hmac
+from crypto.digital_signature import sign_data, decrypt_user_private_key, verify_signature
 
 transaction_bp = Blueprint('transaction', __name__)
+
 
 @transaction_bp.route('/new', methods=['GET', 'POST'])
 def new_transaction():
@@ -17,6 +20,7 @@ def new_transaction():
         receiver_input = request.form.get('receiver')
         amount_str = request.form.get('amount')
         details = request.form.get('details')
+        signature = None
 
         if not receiver_input or not amount_str or not details:
             flash("All fields are required!")
@@ -45,16 +49,23 @@ def new_transaction():
             flash("Receiver not found.")
             return redirect(url_for('transaction.new_transaction'))
 
-        # Get current (newest) key version
+        # Get current key version and key
         encryption_key = Config.ENCRYPTION_KEY
         current_version = Config.KEY_VERSION
-        print(encryption_key)
-        print(current_version)
         encrypted_bytes = aes_encrypt(details, encryption_key)
         encrypted_details = encrypted_bytes.hex()
         integrity = generate_hmac(encrypted_details, encryption_key)
 
-        # Any transaction more than 50000 have to be approved by employee
+        # Use sender's private key to sign plaintext
+        if sender.private_key:
+            try:
+                sender_private_key = decrypt_user_private_key(sender.private_key, sender.key_version)
+                signature = sign_data(details, sender_private_key)
+            except Exception as e:
+                flash(f"Error signing transaction: {e}")
+                return redirect(url_for('transaction.new_transaction'))
+
+        # If transaction amount exceed 50000, need the approval of employee
         if amount > 50000:
             if sender.balance < amount:
                 flash("Insufficient balance for large transaction. Transaction rejected.")
@@ -67,14 +78,14 @@ def new_transaction():
                     encrypted_details=encrypted_details,
                     integrity_hash=integrity,
                     status="pending",
-                    key_version=current_version
+                    key_version=current_version,
+                    signature=signature
                 )
                 db.session.add(new_tx)
                 db.session.commit()
                 flash("Transaction is pending employee approval.")
                 return redirect(url_for('transaction.view_transactions'))
 
-        # If below the amount, can send without approving
         else:
             if sender.balance < amount:
                 flash("Insufficient balance!")
@@ -86,7 +97,8 @@ def new_transaction():
                 encrypted_details=encrypted_details,
                 integrity_hash=integrity,
                 status="approved",
-                key_version=current_version
+                key_version=current_version,
+                signature=signature
             )
             db.session.add(new_tx)
             sender.balance -= amount
@@ -104,24 +116,41 @@ def view_transactions():
         flash("Please log in to view transactions.")
         return redirect(url_for('auth.login'))
 
-    # Get correct user for the session
     current_user_id = session['user_id']
     transactions = Transaction.query.filter(
         (Transaction.sender_id == current_user_id) |
         (Transaction.receiver_id == current_user_id)
     ).order_by(Transaction.timestamp.desc()).all()
 
-    # Decrypt and verify all the transaction details use the correct key version and show it to user
     for tx in transactions:
+        decrypted = None
         try:
             key_for_tx = get_key_by_version(tx.key_version)
             encrypted_bytes = bytes.fromhex(tx.encrypted_details)
+            # Get the plaintext using AES decrypt
             decrypted = aes_decrypt(encrypted_bytes, key_for_tx)
             tx.decrypted_details = decrypted
             if not verify_hmac(tx.encrypted_details, key_for_tx, tx.integrity_hash):
                 tx.decrypted_details += " (Integrity check failed)"
         except Exception as e:
             tx.decrypted_details = f"Decryption error: {e}"
+
+        # Verify digital signature
+        if decrypted is not None and tx.signature:
+            sender = User.query.get(tx.sender_id)
+            if sender and sender.public_key:
+                try:
+                    if verify_signature(decrypted, tx.signature, sender.public_key.encode("utf-8")):
+                        tx.decrypted_details += " (Signature verification succeeded)"
+                    else:
+                        tx.decrypted_details += " (Signature verification failed)"
+                except Exception as e:
+                    tx.decrypted_details += f" (Signature verification error: {e})"
+            else:
+                tx.decrypted_details += " (Sender public key missing)"
+        else:
+            if decrypted is None:
+                tx.decrypted_details += " (Skipping signature verification due to decryption failure)"
 
         if tx.sender_id == current_user_id:
             receiver = User.query.get(tx.receiver_id)

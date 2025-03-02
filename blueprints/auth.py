@@ -1,9 +1,12 @@
 from flask import Blueprint, request, render_template, redirect, url_for, flash, session
 from db.models import User, generate_account_number
 from extensions import db
+from config import Config
+from crypto.digital_signature import generate_user_keypair, encrypt_user_private_key
 import random
 
 auth_bp = Blueprint('auth', __name__)
+
 
 # For Clients to Register the Account
 @auth_bp.route('/register', methods=['GET', 'POST'])
@@ -23,9 +26,18 @@ def register():
         new_user = User(
             username=username,
             account_number=generate_account_number(),
-            balance=0.0  # Initial Balance 0
+            balance=0.0,  # Initial Balance 0
+            key_version=Config.KEY_VERSION
         )
         new_user.set_password(password)
+
+        # Generate Key Pair
+        private_key, public_key = generate_user_keypair()
+        # Encrypt Private Key
+        encrypted_private_key = encrypt_user_private_key(private_key)
+        new_user.private_key = encrypted_private_key
+        new_user.public_key = public_key.decode("utf-8")
+
         db.session.add(new_user)
         db.session.commit()
 
@@ -33,6 +45,7 @@ def register():
         return redirect(url_for('auth.login'))
 
     return render_template('register.html')
+
 
 # For Clients, Employees and Administrators to Login
 @auth_bp.route('/login', methods=['GET', 'POST'])
@@ -90,11 +103,9 @@ def mfa():
     return render_template('mfa.html')
 
 
-
 # Logout Feature
 @auth_bp.route('/logout')
 def logout():
     session.clear()  # Remove session histories
     flash("You have been logged out.")
     return redirect(url_for('index'))
-

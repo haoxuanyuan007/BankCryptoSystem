@@ -2,56 +2,63 @@
 {% block title %}Settings - MyBank{% endblock %}
 {% block content %}
     <div class="row justify-content-center">
-        <div class="col-md-4">
-            <h2 class="text-center">Account Settings</h2>
-            <div class="card mb-4">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg">
+                <div class="card-header text-white"
+                     style="background: linear-gradient(90deg, #5a46c8, #a249ed, #be80b0); color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);">
+                    <h3 class="card-title mb-0 text-center">Account Settings</h3>
+                </div>
                 <div class="card-body">
-                    <p><strong>Username:</strong> {{ user.username }}</p>
-                    <p><strong>Account Number:</strong> {{ user.account_number }}</p>
-                    <p><strong>Balance:</strong> ${{ "%.2f"|format(user.balance) }}</p>
-                    <p><strong>Address:</strong> {{ decrypted_address if decrypted_address else "Not Set" }}</p>
-                    <p><strong>Contact:</strong> {{ decrypted_contact if decrypted_contact else "Not Set" }}</p>
+                    <div class="mb-4">
+                        <p><strong>Username:</strong> {{ user.username }}</p>
+                        <p><strong>Account Number:</strong> {{ user.account_number }}</p>
+                        <p><strong>Balance:</strong> ${{ "%.2f"|format(user.balance) }}</p>
+                        <p><strong>Address:</strong> {{ decrypted_address if decrypted_address else "Not Set" }}</p>
+                        <p><strong>Contact:</strong> {{ decrypted_contact if decrypted_contact else "Not Set" }}</p>
+                    </div>
+                    <form method="POST" action="{{ url_for('account.settings') }}">
+                        <h5 class="mb-3">Update Security</h5>
+                        <div class="mb-3">
+                            <label for="current_password" class="form-label">Current Password:</label>
+                            <input type="password" name="current_password" id="current_password" class="form-control"
+                                   placeholder="Enter current password" required>
+                        </div>
+                        <hr>
+                        <h5 class="mb-3">Reset Password</h5>
+                        <div class="mb-3">
+                            <label for="new_password" class="form-label">New Password:</label>
+                            <input type="password" name="new_password" id="new_password" class="form-control"
+                                   placeholder="Leave blank if unchanged">
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirm_password" class="form-label">Confirm New Password:</label>
+                            <input type="password" name="confirm_password" id="confirm_password" class="form-control"
+                                   placeholder="Leave blank if unchanged">
+                        </div>
+                        <hr>
+                        <h5 class="mb-3">Update Personal Information</h5>
+                        <div class="mb-3">
+                            <label for="new_username" class="form-label">New Username:</label>
+                            <input type="text" name="new_username" id="new_username" class="form-control"
+                                   placeholder="Leave blank if unchanged">
+                        </div>
+                        <div class="mb-3">
+                            <label for="new_address" class="form-label">New Address:</label>
+                            <input type="text" name="new_address" id="new_address" class="form-control"
+                                   placeholder="Leave blank if unchanged">
+                        </div>
+                        <div class="mb-3">
+                            <label for="new_contact" class="form-label">New Contact:</label>
+                            <input type="text" name="new_contact" id="new_contact" class="form-control"
+                                   placeholder="Leave blank if unchanged">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Update Settings</button>
+                    </form>
                 </div>
             </div>
-            <form method="POST" action="{{ url_for('account.settings') }}">
-                <h4>Current Password</h4>
-                <div class="mb-3">
-                    <input type="password" name="current_password" id="current_password" class="form-control"
-                           placeholder="This field is required to change anything" required>
-                </div>
-                <hr>
-                <h4>Reset Password</h4>
-                <div class="mb-3">
-                    <label for="new_password" class="form-label">New Password:</label>
-                    <input type="password" name="new_password" id="new_password" class="form-control"
-                           placeholder="Leave blank if unchanged">
-                </div>
-                <div class="mb-3">
-                    <label for="confirm_password" class="form-label">Confirm New Password:</label>
-                    <input type="password" name="confirm_password" id="confirm_password" class="form-control"
-                           placeholder="Leave blank if unchanged">
-                </div>
-                <hr>
-                <h4>Update Personal Info</h4>
-                <div class="mb-3">
-                    <label for="new_username" class="form-label">New Username:</label>
-                    <input type="text" name="new_username" id="new_username" class="form-control"
-                           placeholder="Leave blank if unchanged">
-                </div>
-                <div class="mb-3">
-                    <label for="new_address" class="form-label">New Address:</label>
-                    <input type="text" name="new_address" id="new_address" class="form-control"
-                           placeholder="Leave blank if unchanged">
-                </div>
-                <div class="mb-3">
-                    <label for="new_contact" class="form-label">New Contact:</label>
-                    <input type="text" name="new_contact" id="new_contact" class="form-control"
-                           placeholder="Leave blank if unchanged">
-                </div>
-
-                <button type="submit" class="btn btn-primary">Update Settings</button>
-            </form>
-            <a href="{{ url_for('index') }}" class="btn btn-secondary mt-3">Back to Home</a>
+            <div class="mt-3 text-center">
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">Back to Home</a>
+            </div>
         </div>
     </div>
 {% endblock %}

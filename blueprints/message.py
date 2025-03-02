@@ -4,6 +4,7 @@ from extensions import db
 from config import Config
 from crypto.encryption import aes_encrypt, aes_decrypt, get_key_by_version
 from crypto.integrity import generate_hmac, verify_hmac
+from crypto.digital_signature import sign_data, decrypt_user_private_key, verify_signature
 
 message_bp = Blueprint('message', __name__)
 
@@ -42,13 +43,23 @@ def send_message():
         # Generate HMAC
         integrity = generate_hmac(encrypted_content, encryption_key)
 
+        # Use sender's private key to generate digital signature (need to decrypt the private key first)
+        sender = User.query.get(session['user_id'])
+        try:
+            sender_private_key = decrypt_user_private_key(sender.private_key, sender.key_version)
+            signature = sign_data(content, sender_private_key)
+        except Exception as e:
+            flash(f"Error signing the message: {e}")
+            return redirect(url_for('message.send_message'))
+
         # Put the new message into database
         new_msg = Message(
             sender_id=session['user_id'],
             receiver_id=receiver.id,
             encrypted_content=encrypted_content,
             integrity_hash=integrity,
-            key_version=current_version
+            key_version=current_version,
+            signature=signature
         )
         db.session.add(new_msg)
         db.session.commit()
@@ -87,6 +98,15 @@ def inbox():
         sender = User.query.get(msg.sender_id)
         msg.sender_info = sender.username if sender else "Unknown"
 
+        # Verify Signature
+        if sender and hasattr(msg, 'signature') and msg.signature:
+            try:
+                if verify_signature(decrypted, msg.signature, sender.public_key):
+                    msg.decrypted_content += " (Signature verification succeeded)"
+                else:
+                    msg.decrypted_content += " (Signature verification failed)"
+            except Exception as e:
+                msg.decrypted_content += f" (Signature verification error: {e})"
     return render_template('inbox.html', messages=messages)
 
 
@@ -113,6 +133,17 @@ def outbox():
                 msg.decrypted_content += " (Integrity check failed)"
         except Exception as e:
             msg.decrypted_content = f"Decryption error: {e}"
+
+        # Verify Signature
+        sender = User.query.get(msg.sender_id)
+        if sender and hasattr(msg, 'signature') and msg.signature:
+            try:
+                if verify_signature(decrypted, msg.signature, sender.public_key):
+                    msg.decrypted_content += " (Signature verification succeeded)"
+                else:
+                    msg.decrypted_content += " (Signature verification failed)"
+            except Exception as e:
+                msg.decrypted_content += f" (Signature verification error: {e})"
 
         receiver = User.query.get(msg.receiver_id)
         msg.receiver_info = receiver.username if receiver else "Unknown"

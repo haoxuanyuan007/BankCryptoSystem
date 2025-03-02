@@ -1,62 +1,67 @@
 {% extends "base.html" %}
-{% block title %}Pending - MyBank{% endblock %}
+{% block title %}Pending Transactions - MyBank{% endblock %}
 {% block content %}
-
-    <h2 class="text-center">Pending Transactions</h2>
-    {% if transactions %}
-        <div class="table-responsive">
-            <table class="table table-bordered">
-                <thead class="table-light">
-                <tr>
-                    <th>ID</th>
-                    <th>Sender</th>
-                    <th>Receiver</th>
-                    <th>Amount</th>
-                    <th>Details</th>
-                    <th>Time</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for tx in transactions %}
+    <div class="container">
+        <h2 class="mb-4 text-center">Pending Transactions</h2>
+        {% if transactions %}
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-primary">
                     <tr>
-                        <td>{{ tx.id }}</td>
-                        <td>
-                            {% if parties[tx.id].sender %}
-                                {{ parties[tx.id].sender.username }} (Acct: {{ parties[tx.id].sender.account_number }})
-                            {% else %}
-                                Unknown
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if parties[tx.id].receiver %}
-                                {{ parties[tx.id].receiver.username }} (Acct:
-                                {{ parties[tx.id].receiver.account_number }})
-                            {% else %}
-                                Unknown
-                            {% endif %}
-                        </td>
-                        <td>${{ "%.2f"|format(tx.amount) }}</td>
-                        <td>{{ tx.decrypted_details }}</td>
-                        <td>{{ tx.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}</td>
-                        <td>
-                            <form method="POST" action="{{ url_for('employee.approve_transaction', tx_id=tx.id) }}"
-                                  style="display:inline;">
-                                <button type="submit" class="btn btn-sm btn-success">Approve</button>
-                            </form>
-                            <form method="POST" action="{{ url_for('employee.reject_transaction', tx_id=tx.id) }}"
-                                  style="display:inline;">
-                                <button type="submit" class="btn btn-sm btn-danger">Reject</button>
-                            </form>
-                        </td>
+                        <th scope="col">ID</th>
+                        <th scope="col">Sender</th>
+                        <th scope="col">Receiver</th>
+                        <th scope="col">Amount</th>
+                        <th scope="col">Details</th>
+                        <th scope="col">Time</th>
+                        <th scope="col">Actions</th>
                     </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {% for tx in transactions %}
+                        <tr>
+                            <td>{{ tx.id }}</td>
+                            <td>
+                                {% if parties[tx.id].sender %}
+                                    {{ parties[tx.id].sender.username }}<br>
+                                    <small>Acct: {{ parties[tx.id].sender.account_number }}</small>
+                                {% else %}
+                                    Unknown
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if parties[tx.id].receiver %}
+                                    {{ parties[tx.id].receiver.username }}<br>
+                                    <small>Acct: {{ parties[tx.id].receiver.account_number }}</small>
+                                {% else %}
+                                    Unknown
+                                {% endif %}
+                            </td>
+                            <td>£{{ "%.2f"|format(tx.amount) }}</td>
+                            <td>{{ tx.decrypted_details }}</td>
+                            <td>{{ tx.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <form method="POST"
+                                          action="{{ url_for('employee.approve_transaction', tx_id=tx.id) }}">
+                                        <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                                    </form>
+                                    <form method="POST"
+                                          action="{{ url_for('employee.reject_transaction', tx_id=tx.id) }}">
+                                        <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-center">No pending transactions found.</p>
+        {% endif %}
+        <div class="text-center mt-3">
+            <a href="{{ url_for('employee.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
         </div>
-    {% else %}
-        <p class="text-center">No pending transactions found.</p>
-    {% endif %}
-    <a href="{{ url_for('employee.dashboard') }}" class="btn btn-secondary mt-3">Back to Dashboard</a>
-
+    </div>
 {% endblock %}

@@ -4,6 +4,7 @@ import os
 import datetime
 from db.models import KeyStore, db
 from crypto.integrity import generate_hmac
+from db.models import SystemConfig
 
 
 ### Set Up and Logging to test or monitor key manage system ###
@@ -21,6 +22,18 @@ logger.addHandler(handler)
 
 # Rotation Cycle for update the key here using 5 second for testing, in real life can use days
 ROTATION_TIME = 5
+
+def get_rotation_time() -> int:
+    """从数据库中获取轮换时间（转换为秒）。"""
+    value_config = SystemConfig.query.filter_by(key="rotation_time_value").first()
+    unit_config = SystemConfig.query.filter_by(key="rotation_time_unit").first()
+    try:
+        value = int(value_config.value) if value_config and value_config.value.isdigit() else 5
+    except:
+        value = 5
+    unit = unit_config.value if unit_config else "seconds"
+    multiplier = {"seconds": 1, "hours": 3600, "days": 86400}
+    return value * multiplier.get(unit, 1)
 
 def generate_random_master_key() -> str:
     return os.urandom(32).hex()
@@ -41,31 +54,44 @@ def get_latest_key() -> (str, str):
         db.session.commit()
         return new_key, new_version
 
-def is_master_key_expired(rotation_time: int = ROTATION_TIME) -> bool:
+def is_master_key_expired(rotation_time: int = None) -> bool:
     """
     Check if the key is expired
     """
+    if rotation_time is None:
+        rotation_time = get_rotation_time()
     latest_entry = KeyStore.query.order_by(KeyStore.created_at.desc()).first()
     if not latest_entry:
         return True
     last_modified = latest_entry.created_at
     return datetime.datetime.now() - last_modified > datetime.timedelta(seconds=rotation_time)
 
+def is_key_in_use(version: str) -> bool:
+    """
+    Check if there is still key_version in use on any data.
+    """
+    from db.models import Transaction, Message, User
+    in_tx = Transaction.query.filter_by(key_version=version).first() is not None
+    in_msg = Message.query.filter_by(key_version=version).first() is not None
+    in_user = User.query.filter_by(key_version=version).first() is not None
+    return in_tx or in_msg or in_user
+
 def cleanup_old_keys(max_keys: int = 7):
     """
-    Clean old keys, only keep the latest max_keys keys.
-    Here is keeping 7 keys for safety and recovery.
-    Also only clean those keys that is not in use.
+    Clean unused keys, but keep the key that is in use
     """
-    # Get all the keys, put the newest key at the front
     keys = KeyStore.query.order_by(KeyStore.created_at.desc()).all()
+    deleted_count = 0
     if len(keys) > max_keys:
-        keys_to_delete = keys[max_keys:]
-        for key_entry in keys_to_delete:
-            # Check if the key is referenced
-            db.session.delete(key_entry)
+        keys_to_check = keys[max_keys:]
+        for key_entry in keys_to_check:
+            if is_key_in_use(key_entry.version):
+                logger.info(f"Key version {key_entry.version} is still in use, skipping deletion.")
+            else:
+                db.session.delete(key_entry)
+                deleted_count += 1
         db.session.commit()
-        logger.info(f"Cleaned up {len(keys_to_delete)} old keys; only kept the latest {max_keys} keys.")
+        logger.info(f"Cleaned up {deleted_count} old keys; retained keys in use or within latest {max_keys} keys.")
     else:
         logger.info("No old keys to clean up.")
 
@@ -128,6 +154,7 @@ def reencrypt_data_records(old_version: str, new_version: str):
             msg.integrity_hash = new_hmac
             msg.key_version = new_version
 
+
     db.session.commit()
 
 def reencrypt_user_data(old_version: str, new_version: str):
@@ -151,12 +178,18 @@ def reencrypt_user_data(old_version: str, new_version: str):
             if new_contact_hmac is not None:
                 usr.contact = new_contact_hex
                 usr.contact_integrity_hash = new_contact_hmac
+
+        if usr.private_key:
+            new_priv_hex, new_priv_hmac = reencrypt_data(usr.private_key, old_version, new_version)
+            if new_priv_hmac is not None:
+                usr.private_key = new_priv_hex
+
         usr.key_version = new_version
 
     db.session.commit()
 
 
-def auto_rotate_master_key(rotation_time: int = ROTATION_TIME) -> (str, str):
+def auto_rotate_master_key(rotation_time: int = None) -> (str, str):
     """
     If the newest key is expired, generate new key, store it in KeyStore table (database),
     and then reencrypt all the data using the new key (Transactions, Messages, Users, ...).
@@ -164,6 +197,8 @@ def auto_rotate_master_key(rotation_time: int = ROTATION_TIME) -> (str, str):
     This function must be invoked in application context.
     """
     from db.models import Transaction, Message, User  # Delayed imports to avoid circular dependencies
+    if rotation_time is None:
+        rotation_time = get_rotation_time()
     if is_master_key_expired(rotation_time):
         new_key = generate_random_master_key()
         new_version = datetime.datetime.now().isoformat()
@@ -259,6 +294,7 @@ def aes_decrypt(cipher_data: bytes, key: str) -> str:
 """
 NOTE: This is only a RSA implementation for demonstration purpose. These functions are not used in this project.
 This project is using HTTPS: SSL/TLS protocol as an Asymmetric Encryption method to protect data in transit.
+This project only use RSA key pair generating to implement Digital Signature.
 """
 def generate_rsa_keypair(key_size: int = 2048):
     key = RSA.generate(key_size)

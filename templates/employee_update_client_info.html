@@ -1,33 +1,37 @@
 {% extends "base.html" %}
-{% block title %}Udate Client Info - MyBank{% endblock %}
+{% block title %}Update Client Info - MyBank{% endblock %}
 {% block content %}
-
     <div class="row justify-content-center">
-        <div class="col-md-4">
-            <h2 class="text-center">Update Client Info</h2>
-            <p class="text-center">Client: {{ client.username }}</p>
-            <form method="POST" action="{{ url_for('employee.update_client_info', user_id=client.id) }}">
-                <div class="mb-3">
-                    <label for="new_username" class="form-label">New Username:</label>
-                    <input type="text" name="new_username" id="new_username" class="form-control"
-                           placeholder="Leave blank if unchanged">
+        <div class="col-md-5 col-lg-4">
+            <div class="card shadow-lg border-0 mb-4">
+                <div class="card-header"
+                     style="background: linear-gradient(90deg, #5a46c8, #a249ed, #be80b0); color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);">
+                    <h2 class="card-title mb-0 text-center">Update Client Info</h2>
                 </div>
-                <div class="mb-3">
-                    <label for="new_address" class="form-label">New Address:</label>
-                    <!-- Show address default -->
-                    <input type="text" name="new_address" id="new_address" class="form-control"
-                           placeholder="Leave blank if unchanged" value="{{ decrypted_address }}">
+                <div class="card-body">
+                    <p class="text-center">Client: {{ client.username }}</p>
+                    <form method="POST" action="{{ url_for('employee.update_client_info', user_id=client.id) }}">
+                        <div class="mb-3">
+                            <label for="new_username" class="form-label">New Username:</label>
+                            <input type="text" name="new_username" id="new_username" class="form-control"
+                                   placeholder="Leave blank if unchanged">
+                        </div>
+                        <div class="mb-3">
+                            <label for="new_address" class="form-label">New Address:</label>
+                            <input type="text" name="new_address" id="new_address" class="form-control"
+                                   placeholder="Leave blank if unchanged" value="{{ decrypted_address }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="new_password" class="form-label">New Password:</label>
+                            <input type="password" name="new_password" id="new_password" class="form-control"
+                                   placeholder="Leave blank if unchanged">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Update Info</button>
+                    </form>
                 </div>
-                <div class="mb-3">
-                    <label for="new_password" class="form-label">New Password:</label>
-                    <input type="text" name="new_password" id="new_password" class="form-control"
-                           placeholder="Leave blank if unchanged">
-                </div>
-                <button type="submit" class="btn btn-primary w-100">Update Info</button>
-            </form>
-            <a href="{{ url_for('employee.dashboard', user_id=client.id) }}" class="btn btn-secondary mt-3 w-100">Back to
+            </div>
+            <a href="{{ url_for('employee.dashboard', user_id=client.id) }}" class="btn btn-secondary w-100">Back to
                 Dashboard</a>
         </div>
     </div>
-
 {% endblock %}

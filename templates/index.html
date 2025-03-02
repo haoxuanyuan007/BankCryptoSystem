@@ -1,27 +1,80 @@
-<!-- templates/index.html -->
 {% extends "base.html" %}
 {% block title %}Home - MyBank{% endblock %}
 {% block content %}
-<div class="p-4 bg-light rounded text-center">
-  {% if session.username and user_info %}
-    {% if session.role == 'admin' %}
-      <h1>Welcome, Admin {{ user_info.username }}!</h1>
-      <p>You can manage the entire system from the Admin Dashboard.</p>
-      <a href="{{ url_for('admin.dashboard') }}" class="btn btn-primary">Go to Admin Dashboard</a>
-    {% elif session.role == 'employee' %}
-      <h1>Welcome, Employee {{ user_info.username }}!</h1>
-      <p>Access your dashboard to manage client transactions and operations.</p>
-      <a href="{{ url_for('employee.dashboard') }}" class="btn btn-primary">Go to Employee Dashboard</a>
-    {% else %}
-      <h1>Welcome to MyBank!</h1>
-      <p>Hello, {{ user_info.username }}!</p>
-      <p>Account Number: <strong>{{ user_info.account_number }}</strong></p>
-      <p>Balance: <strong>${{ "%.2f"|format(user_info.balance) }}</strong></p>
-      <a href="{{ url_for('transaction.new_transaction') }}" class="btn btn-primary">New Transaction</a>
-    {% endif %}
-  {% else %}
-    <h1>Welcome to MyBank!</h1>
-    <p>Please log in or register to access your account.</p>
-  {% endif %}
-</div>
+    <style>
+        .btn-custom-primary {
+            background-color: #383dca;
+            border-color: #383dca;
+            color: #fff;
+        }
+
+        .btn-custom-secondary {
+            background-color: #a249ed;
+            border-color: #a249ed;
+            color: #fff;
+        }
+
+
+        /* Hover */
+        .btn-custom-primary:hover {
+            background-color: #2e33b5;
+            border-color: #2e33b5;
+        }
+
+        .btn-custom-secondary:hover {
+            background-color: #8a3de0;
+            border-color: #8a3de0;
+        }
+
+    </style>
+
+    <div class="position-relative" style="min-height: 100vh;">
+        <div class="bg-image" style="
+      background-image:
+      url('https://www.endava.com/hubfs/Endava%202024/Industries/Finance%20and%20Banking/Landing%20Pages/hero/finance-banking-fullscreen-hero-desktop.webp');
+      filter: brightness(0.7);
+      background-size: cover;
+      background-position: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      z-index: -1;
+  "></div>
+
+        <div class="container position-relative" style="z-index: 1;">
+            <div class="card shadow-lg" style="max-width: 800px; background-color: rgba(255,255,255,0.85);">
+                <div class="card-body p-5 text-center">
+                    {% if session.username and user_info %}
+                        {% if session.role == 'admin' %}
+                            <h1 class="card-title display-5 mb-3">Welcome, Admin {{ user_info.username }}!</h1>
+                            <p class="card-text lead">Manage the entire system from the Admin Dashboard.</p>
+                            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-custom-secondary btn-lg">Go to Admin
+                                Dashboard</a>
+                        {% elif session.role == 'employee' %}
+                            <h1 class="card-title display-5 mb-3">Welcome, Employee {{ user_info.username }}!</h1>
+                            <p class="card-text lead">Access your dashboard to manage client transactions and
+                                operations.</p>
+                            <a href="{{ url_for('employee.dashboard') }}" class="btn btn-custom-primary btn-lg">Go to Employee
+                                Dashboard</a>
+                        {% else %}
+                            <h1 class="card-title display-5 mb-3">Welcome to MyBank, {{ user_info.username }}!</h1>
+                            <p class="card-text lead">Your Account Number:
+                                <strong>{{ user_info.account_number }}</strong></p>
+                            <p class="card-text lead">Balance: <strong>${{ "%.2f"|format(user_info.balance) }}</strong>
+                            </p>
+                            <a href="{{ url_for('transaction.new_transaction') }}" class="btn btn-custom-primary btn-lg">New
+                                Transaction</a>
+                        {% endif %}
+                    {% else %}
+                        <h1 class="card-title display-5 mb-3">Welcome to MyBank!</h1>
+                        <p class="card-text lead">Secure, modern, and reliable banking at your fingertips.</p>
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-custom-primary btn-lg me-2">Login</a>
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-custom-secondary btn-lg">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

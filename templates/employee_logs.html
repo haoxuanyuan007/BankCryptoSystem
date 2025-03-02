@@ -1,19 +1,18 @@
 {% extends "base.html" %}
-{% block title %}Logs - MyBank{% endblock %}
+{% block title %}Operation Logs - MyBank{% endblock %}
 {% block content %}
-
-    <div class="row justify-content-center">
-        <h2 class="text-center">Operation Logs</h2>
+    <div class="container">
+        <h2 class="my-4 text-center">Operation Logs</h2>
         {% if logs %}
             <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead class="table-light">
+                <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-primary">
                     <tr>
-                        <th>ID</th>
-                        <th>Employee ID</th>
-                        <th>Operation</th>
-                        <th>Details</th>
-                        <th>Timestamp</th>
+                        <th scope="col">ID</th>
+                        <th scope="col">Employee</th>
+                        <th scope="col">Operation</th>
+                        <th scope="col">Details</th>
+                        <th scope="col">Timestamp</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -32,8 +31,8 @@
         {% else %}
             <p class="text-center">No operation logs found.</p>
         {% endif %}
-
+        <div class="text-center mt-3">
+            <a href="{{ url_for('employee.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
     </div>
-    <a href="{{ url_for('employee.dashboard') }}" class="btn btn-secondary mt-3">Back to Dashboard</a>
-
 {% endblock %}
