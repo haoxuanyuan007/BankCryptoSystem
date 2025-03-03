@@ -66,7 +66,7 @@ def mfa():
 @employee_bp.route('/dashboard')
 def dashboard():
     if 'user_id' not in session or session.get('role') != 'employee':
-        flash("Please log in as an employee to access this page.")
+        flash("You don't have permission to access this page. Please log in as an employee.")
         return redirect(url_for('employee.login'))
 
     # Search all Clients
@@ -79,7 +79,7 @@ def dashboard():
 @employee_bp.route('/customer/<int:user_id>/review_transactions')
 def review_customer_transactions(user_id):
     if 'user_id' not in session or session.get('role') != 'employee':
-        flash("Please log in as an employee to access this page.")
+        flash("You don't have permission to access this page. Please log in as an employee.")
         return redirect(url_for('employee.login'))
     customer = User.query.get(user_id)
     if not customer:
@@ -95,7 +95,7 @@ def review_customer_transactions(user_id):
 @employee_bp.route('/customer/<int:user_id>/update', methods=['GET', 'POST'])
 def update_customer(user_id):
     if 'user_id' not in session or session.get('role') != 'employee':
-        flash("Please log in as an employee to access this page.")
+        flash("You don't have permission to access this page. Please log in as an employee.")
         return redirect(url_for('employee.login'))
 
     customer = User.query.get(user_id)
@@ -147,7 +147,7 @@ def update_customer(user_id):
 @employee_bp.route('/logs')
 def view_logs():
     if 'user_id' not in session or session.get('role') != 'employee':
-        flash("Please log in as an employee to access this page.")
+        flash("You don't have permission to access this page. Please log in as an employee.")
         return redirect(url_for('employee.login'))
 
     logs = OperationLog.query.order_by(OperationLog.timestamp.desc()).all()

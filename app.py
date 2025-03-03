@@ -37,9 +37,7 @@ app.register_blueprint(message_bp, url_prefix='/message')
 app.register_blueprint(admin_bp, url_prefix='/admin')
 
 with app.app_context():
-     init_keys(app)
-     Config.ENCRYPTION_KEY = app.config["ENCRYPTION_KEY"]
-     Config.KEY_VERSION = app.config["KEY_VERSION"]
+    init_keys(app)
 
 init_scheduler(app)
 

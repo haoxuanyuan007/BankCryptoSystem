@@ -4,48 +4,37 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c85c22e6-1bd4-42ef-a988-dc9498e63272" name="Changes" comment="Implemented KMS, Updated Comments">
-      <change afterPath="$PROJECT_DIR$/crypto/digital_signature.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/admin_config.html" afterDir="false" />
+    <list default="true" id="c85c22e6-1bd4-42ef-a988-dc9498e63272" name="Changes" comment="Admin can change key rotation time in the front end now.&#10;Updated all the templates.">
+      <change afterPath="$PROJECT_DIR$/tests/test_security.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blueprints/account.py" beforeDir="false" afterPath="$PROJECT_DIR$/blueprints/account.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blueprints/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/blueprints/admin.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blueprints/auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/blueprints/auth.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blueprints/employee.py" beforeDir="false" afterPath="$PROJECT_DIR$/blueprints/employee.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blueprints/message.py" beforeDir="false" afterPath="$PROJECT_DIR$/blueprints/message.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blueprints/transaction.py" beforeDir="false" afterPath="$PROJECT_DIR$/blueprints/transaction.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/crypto/encryption.py" beforeDir="false" afterPath="$PROJECT_DIR$/crypto/encryption.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/db/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instance/mybank.db" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/README" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/alembic.ini" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/env.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/script.py.mako" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/versions/0d4c6acbedda_.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/versions/228527a2db25_.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/versions/6fc3e88a2a16_.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/versions/745e240bd7b0_.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/versions/88f161128d77_.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/versions/89d65c5aabf5_.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/versions/a6c376058b10_.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/versions/a7703ba7e0b0_.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/versions/af21a4af918b_.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/versions/b854fa415c99_.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/versions/f04db31e8114_.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/scheduler.py" beforeDir="false" afterPath="$PROJECT_DIR$/scheduler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/admin_add_employee.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/admin_add_employee.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/admin_audit.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/admin_audit.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/admin_dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/admin_dashboard.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/admin_login.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/admin_login.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/admin_mfa.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/admin_mfa.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/admin_update_employee.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/admin_update_employee.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/admin_update_role.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/admin_update_role.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/deposit.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/deposit.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/employee_dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/employee_dashboard.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/employee_login.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/employee_login.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/employee_logs.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/employee_logs.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/employee_make_transaction.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/employee_make_transaction.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/employee_mfa.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/employee_mfa.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/employee_pending_transactions.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/employee_pending_transactions.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/employee_review_customer_transactions.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/employee_review_customer_transactions.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/employee_update_client_info.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/employee_update_client_info.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/employee_update_customer.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/employee_update_customer.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/inbox.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/inbox.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/login.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/mfa.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/mfa.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/new_transaction.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/new_transaction.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/outbox.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/outbox.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/register.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/register.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/send_message.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/send_message.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/settings.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/settings.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/view_transactions.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/view_transactions.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/withdraw.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/withdraw.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_encryption.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -96,24 +85,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultHtmlFileTemplate": "HTML File",
-    "Flask server.Flask (app.py).executor": "Run",
-    "Flask server.MyBankCryptoSystem.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "master",
-    "last_opened_file_path": "/Users/toni/Desktop/Module/WM9PC - Applied Cryptography/Coursework/MyBankCryptoSystem",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;Flask server.Flask (app.py).executor&quot;: &quot;Run&quot;,
+    &quot;Flask server.MyBankCryptoSystem.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_encryption.py.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/toni/Desktop/Module/WM9PC - Applied Cryptography/Coursework/MyBankCryptoSystem&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
@@ -123,7 +113,7 @@
       <recent name="$PROJECT_DIR$/db" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Flask server.MyBankCryptoSystem">
     <configuration name="MyBankCryptoSystem" type="Python.FlaskServer">
       <option name="flaskDebug" value="true" />
       <module name="MyBankCryptoSystem" />
@@ -156,6 +146,31 @@
       <option name="launchJavascriptDebuger" value="false" />
       <method v="2" />
     </configuration>
+    <configuration name="Python tests in test_encryption.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="MyBankCryptoSystem" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/test_encryption.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Flask server.MyBankCryptoSystem" />
+      <item itemvalue="Python tests.Python tests in test_encryption.py" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python tests.Python tests in test_encryption.py" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -192,7 +207,20 @@
       <workItem from="1740629740143" duration="7637000" />
       <workItem from="1740740082554" duration="14771000" />
       <workItem from="1740776854863" duration="1275000" />
-      <workItem from="1740847441651" duration="32518000" />
+      <workItem from="1740847441651" duration="33695000" />
+      <workItem from="1740926132434" duration="5754000" />
+      <workItem from="1740955781659" duration="22516000" />
+      <workItem from="1740994810944" duration="38000" />
+      <workItem from="1740995133427" duration="1888000" />
+      <workItem from="1740997061930" duration="6229000" />
+      <workItem from="1741003375544" duration="30000" />
+      <workItem from="1741004019578" duration="846000" />
+      <workItem from="1741005028187" duration="3157000" />
+      <workItem from="1741008250714" duration="75000" />
+      <workItem from="1741008561498" duration="191000" />
+      <workItem from="1741009585274" duration="234000" />
+      <workItem from="1741010015857" duration="6390000" />
+      <workItem from="1741022411272" duration="44000" />
     </task>
     <task id="LOCAL-00001" summary="Initial Config of the Project">
       <option name="closed" value="true" />
@@ -314,7 +342,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740855316656</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Admin can change key rotation time in the front end now.&#10;Updated all the templates.">
+      <option name="closed" value="true" />
+      <created>1740887322600</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1740887322600</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -325,7 +361,19 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="origin/master" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
@@ -343,10 +391,12 @@
     <MESSAGE value="Translated comments.&#10;Allow employee help client to transfer money." />
     <MESSAGE value="Preparation for KMS" />
     <MESSAGE value="Implemented KMS, Updated Comments" />
-    <option name="LAST_COMMIT_MESSAGE" value="Implemented KMS, Updated Comments" />
+    <MESSAGE value="Admin can change key rotation time in the front end now.&#10;Updated all the templates." />
+    <option name="LAST_COMMIT_MESSAGE" value="Admin can change key rotation time in the front end now.&#10;Updated all the templates." />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/MyBankCryptoSystem$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1740522246983" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
-    <SUITE FILE_PATH="coverage/MyBankCryptoSystem$MyBankCryptoSystem.coverage" NAME="MyBankCryptoSystem Coverage Results" MODIFIED="1740885950331" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MyBankCryptoSystem$MyBankCryptoSystem.coverage" NAME="MyBankCryptoSystem Coverage Results" MODIFIED="1741022438586" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MyBankCryptoSystem$.coverage" NAME=" Coverage Results" MODIFIED="1740968143759" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
   </component>
 </project>

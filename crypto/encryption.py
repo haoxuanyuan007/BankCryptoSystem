@@ -4,7 +4,7 @@ import os
 import datetime
 from db.models import KeyStore, db
 from crypto.integrity import generate_hmac
-from db.models import SystemConfig
+from db.models import SystemConfig, Transaction, Message, User
 
 
 ### Set Up and Logging to test or monitor key manage system ###
@@ -68,32 +68,44 @@ def is_master_key_expired(rotation_time: int = None) -> bool:
 
 def is_key_in_use(version: str) -> bool:
     """
-    Check if there is still key_version in use on any data.
+    Check if a key version is still in use in any table.
+    Uses a single database query to check all relevant tables.
     """
     from db.models import Transaction, Message, User
-    in_tx = Transaction.query.filter_by(key_version=version).first() is not None
-    in_msg = Message.query.filter_by(key_version=version).first() is not None
-    in_user = User.query.filter_by(key_version=version).first() is not None
-    return in_tx or in_msg or in_user
+
+    return db.session.query(
+        db.or_(
+            Transaction.key_version == version,
+            Message.key_version == version,
+            User.key_version == version
+        )
+    ).first() is not None
 
 def cleanup_old_keys(max_keys: int = 7):
     """
-    Clean unused keys, but keep the key that is in use
+    Ensure that only unused keys older than the latest `max_keys` are deleted.
+    This prevents accidental deletion of keys that are still in use.
     """
     keys = KeyStore.query.order_by(KeyStore.created_at.desc()).all()
+    if len(keys) <= max_keys:
+        logger.info("No old keys to clean up.")
+        return
+
     deleted_count = 0
-    if len(keys) > max_keys:
-        keys_to_check = keys[max_keys:]
-        for key_entry in keys_to_check:
-            if is_key_in_use(key_entry.version):
-                logger.info(f"Key version {key_entry.version} is still in use, skipping deletion.")
-            else:
-                db.session.delete(key_entry)
-                deleted_count += 1
+    keys_to_check = keys[max_keys:]
+
+    for key_entry in keys_to_check:
+        if is_key_in_use(key_entry.version):
+            logger.info(f"Key version {key_entry.version} is still in use, skipping deletion.")
+        else:
+            db.session.delete(key_entry)
+            deleted_count += 1
+
+    if deleted_count > 0:
         db.session.commit()
         logger.info(f"Cleaned up {deleted_count} old keys; retained keys in use or within latest {max_keys} keys.")
     else:
-        logger.info("No old keys to clean up.")
+        logger.info("No unused keys were found for deletion.")
 
 def get_key_by_version(version: str) -> str:
     entry = KeyStore.query.filter_by(version=version).first()
@@ -205,6 +217,7 @@ def auto_rotate_master_key(rotation_time: int = None) -> (str, str):
         key_entry = KeyStore(version=new_version, key_value=new_key)
         db.session.add(key_entry)
         db.session.commit()
+        db.session.flush()
 
         # Reencrypt transactions data
         distinct_old_versions = db.session.query(Transaction.key_version)\

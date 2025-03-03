@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: b854fa415c99
+Revision ID: 09d12a04504c
 Revises: 
-Create Date: 2025-02-27 04:41:26.013642
+Create Date: 2025-03-03 15:27:02.700582
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'b854fa415c99'
+revision = '09d12a04504c'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -26,6 +26,13 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('version')
     )
+    op.create_table('system_config',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('key', sa.String(length=50), nullable=False),
+    sa.Column('value', sa.String(length=100), nullable=False),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('key')
+    )
     op.create_table('user',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('username', sa.String(length=64), nullable=False),
@@ -34,6 +41,12 @@ def upgrade():
     sa.Column('account_number', sa.String(length=20), nullable=False),
     sa.Column('balance', sa.Float(), nullable=True),
     sa.Column('address', sa.Text(), nullable=True),
+    sa.Column('address_integrity_hash', sa.String(length=64), nullable=True),
+    sa.Column('contact', sa.Text(), nullable=True),
+    sa.Column('contact_integrity_hash', sa.String(length=64), nullable=True),
+    sa.Column('key_version', sa.String(length=64), nullable=False),
+    sa.Column('private_key', sa.Text(), nullable=True),
+    sa.Column('public_key', sa.Text(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('account_number'),
     sa.UniqueConstraint('username')
@@ -46,6 +59,7 @@ def upgrade():
     sa.Column('integrity_hash', sa.String(length=64), nullable=False),
     sa.Column('timestamp', sa.DateTime(), nullable=True),
     sa.Column('key_version', sa.String(length=64), nullable=False),
+    sa.Column('signature', sa.Text(), nullable=True),
     sa.ForeignKeyConstraint(['receiver_id'], ['user.id'], ),
     sa.ForeignKeyConstraint(['sender_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -69,6 +83,7 @@ def upgrade():
     sa.Column('timestamp', sa.DateTime(), nullable=True),
     sa.Column('status', sa.String(length=20), nullable=True),
     sa.Column('key_version', sa.String(length=64), nullable=False),
+    sa.Column('signature', sa.Text(), nullable=False),
     sa.ForeignKeyConstraint(['receiver_id'], ['user.id'], ),
     sa.ForeignKeyConstraint(['sender_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -82,5 +97,6 @@ def downgrade():
     op.drop_table('operation_log')
     op.drop_table('message')
     op.drop_table('user')
+    op.drop_table('system_config')
     op.drop_table('key_store')
     # ### end Alembic commands ###

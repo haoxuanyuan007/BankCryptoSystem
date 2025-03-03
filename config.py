@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from crypto.encryption import auto_rotate_master_key
+from crypto.encryption import auto_rotate_master_key, get_latest_key
 
 load_dotenv()
 
@@ -13,7 +13,10 @@ class Config:
 
 def init_keys(app):
     with app.app_context():
-        key, version = auto_rotate_master_key()
+        key, version = get_latest_key()
+        if key is None:
+            key, version = auto_rotate_master_key()
+
         app.config["ENCRYPTION_KEY"] = key
         app.config["KEY_VERSION"] = version
         Config.ENCRYPTION_KEY = key

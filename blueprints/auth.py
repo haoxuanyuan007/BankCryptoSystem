@@ -33,6 +33,9 @@ def register():
 
         # Generate Key Pair
         private_key, public_key = generate_user_keypair()
+
+        print("private_key: ", private_key)
+        print("public_key: ", public_key)
         # Encrypt Private Key
         encrypted_private_key = encrypt_user_private_key(private_key)
         new_user.private_key = encrypted_private_key

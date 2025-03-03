@@ -1,18 +1,18 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from crypto.encryption import auto_rotate_master_key, get_rotation_time
+from config import Config
 
-
-# Use this so this web app can invoke the key rotation function regularly when app is running
 def rotate_keys_job(app):
     with app.app_context():
         new_key, new_version = auto_rotate_master_key()
         app.config["ENCRYPTION_KEY"] = new_key
         app.config["KEY_VERSION"] = new_version
+        Config.ENCRYPTION_KEY = new_key
+        Config.KEY_VERSION = new_version
         print(f"Rotated key to version: {new_version}")
 
 def init_scheduler(app):
     scheduler = BackgroundScheduler()
-    # Need to be in context
     with app.app_context():
         interval_seconds = get_rotation_time()
     scheduler.add_job(

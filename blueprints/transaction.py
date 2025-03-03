@@ -51,7 +51,10 @@ def new_transaction():
 
         # Get current key version and key
         encryption_key = Config.ENCRYPTION_KEY
+        print("Encryption Key:", encryption_key)
         current_version = Config.KEY_VERSION
+        print("Current Key Version:", current_version)
+
         encrypted_bytes = aes_encrypt(details, encryption_key)
         encrypted_details = encrypted_bytes.hex()
         integrity = generate_hmac(encrypted_details, encryption_key)
@@ -59,7 +62,9 @@ def new_transaction():
         # Use sender's private key to sign plaintext
         if sender.private_key:
             try:
+                print("Enc Private:", sender.private_key)
                 sender_private_key = decrypt_user_private_key(sender.private_key, sender.key_version)
+                print("Dec Private:", sender_private_key)
                 signature = sign_data(details, sender_private_key)
             except Exception as e:
                 flash(f"Error signing transaction: {e}")
